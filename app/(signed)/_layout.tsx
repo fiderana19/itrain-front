@@ -15,7 +15,7 @@ export default function TabLayout() {
         headerShown: false,
       }}>
       <Tabs.Screen
-        name="home"
+        name="signedhome"
         options={{
           title: 'Accueil',
           tabBarIcon: ({ color, focused }) => (
@@ -24,7 +24,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="search"
+        name="signedsearch"
         options={{
           title: 'Rechercher',
           tabBarIcon: ({ color, focused }) => (
@@ -32,15 +32,26 @@ export default function TabLayout() {
           ),
         }}
       />
-       <Tabs.Screen
-        name="connexion"
+      <Tabs.Screen
+        name="ticket"
         options={{
-          title: 'Se connecter',
+          title: 'Ticket',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'ticket' : 'ticket-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="signedcompte"
+        options={{
+          title: 'Compte',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
           ),
         }}
       />
+
     </Tabs>
+    
   );
 }

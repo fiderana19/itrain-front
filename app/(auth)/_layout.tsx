@@ -15,7 +15,7 @@ export default function TabLayout() {
         headerShown: false,
       }}>
       <Tabs.Screen
-        name="home"
+        name="authhome"
         options={{
           title: 'Accueil',
           tabBarIcon: ({ color, focused }) => (
@@ -24,23 +24,42 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="search"
+        name="reservation"
         options={{
-          title: 'Rechercher',
+          title: 'Reservation',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'search' : 'search-outline'} color={color} />
           ),
         }}
       />
-       <Tabs.Screen
-        name="connexion"
+      <Tabs.Screen
+        name="trajet"
         options={{
-          title: 'Se connecter',
+          title: 'Trajet',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'speedometer-sharp' : 'speedometer-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="train"
+        options={{
+          title: 'Train',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'subway' : 'subway-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="authcompte"
+        options={{
+          title: 'Compte',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
           ),
         }}
       />
+
     </Tabs>
   );
 }
