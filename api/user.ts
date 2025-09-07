@@ -3,8 +3,8 @@ import axiosAuthInstance, { axiosInstance } from "./Config";
 
 const USER_API_URL = `${BASE_API_URL}/user`;
 
-export const userLogin = async (data: any) => {
-    return await axiosInstance.post(`${USER_API_URL}/login`, data);
+export const userLogin = async (email: any, motdepasse: any) => {
+    return await axiosInstance.post(`${USER_API_URL}/login`, {email, motdepasse});
 }
 
 export const userSignup = async (data: any) => {

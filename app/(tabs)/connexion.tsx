@@ -6,37 +6,46 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link, useRouter } from 'expo-router'
+import { useAuth } from '../../context/AuthContext';
 
 export default function LoginPageScreen() {
   const [email, setEmail] = useState("")
   const [motdepasse, setMotdepasse] = useState("")
-  const router = useRouter()
+  const router = useRouter();
+  const { login }  = useAuth();
 
   useEffect(() => {
   }, [])
   
 
   const submitForm = async (e: any) => {
+    const data = {email, motdepasse};
+    await login(email, motdepasse);
+
     try {   
       const response  = await axios({
         method: 'POST',
-        url: `http://192.168.43.184:3002/user/login`,
+        url: `http://localhost:3002/user/login`,
         data: {email , motdepasse}
-      })        
-        await AsyncStorage.setItem('token' , response.data.token)
-        AsyncStorage.setItem('uid' ,  response.data.uid.toString())
-        await AsyncStorage.setItem('isadmin' , response.data.isadmin)
+      })    
+      const decodedToken = JSON.parse(atob(response.data.token.split('.')[1]));
 
-        const token = await AsyncStorage.getItem('token')
-        const uid = await AsyncStorage.getItem('uid')
-        const isadmin = await AsyncStorage.getItem('isadmin')
+      console.log(response.data.token, decodedToken)  
+        
+        // await AsyncStorage.setItem('token' , response.data.token)
+        // AsyncStorage.setItem('uid' ,  response.data.uid.toString())
+        // await AsyncStorage.setItem('isadmin' , response.data.isadmin)
 
-        if(isadmin == '1') {
-          router.replace('/authhome')          
-        }
-        if(isadmin == '0') {
-          router.replace('/signedhome')
-        }
+        // const token = await AsyncStorage.getItem('token')
+        // const uid = await AsyncStorage.getItem('uid')
+        // const isadmin = await AsyncStorage.getItem('isadmin')
+
+        // if(isadmin == '1') {
+        //   router.replace('/authhome')          
+        // }
+        // if(isadmin == '0') {
+        //   router.replace('/signedhome')
+        // }
     } catch (error) {
       console.log(error)
     }
