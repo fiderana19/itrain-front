@@ -4,7 +4,7 @@ import { stylesPerso } from '@/src/styles/GeneralStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link, router } from 'expo-router';
 import { useEffect } from 'react';
-import { StyleSheet, View, Text, ScrollView, ImageBackground, Pressable } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, ImageBackground } from 'react-native';
 
 export default function HomeScreen() {
   const Manakara = '../../assets/photo/manakara.jpg';

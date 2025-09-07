@@ -2,9 +2,9 @@ import { colorBlue } from '@/constants/Colors';
 import { page, stylesPerso, trajetbox } from '@/src/styles/GeneralStyles';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, Modal, TextInput, Button, Pressable, ImageBackground, Image, Alert } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Modal, TextInput, Button, Pressable, Image, Alert } from 'react-native';
 import axios from 'axios';
 import Marginer from '@/components/personalized/Marginer';
 

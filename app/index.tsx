@@ -1,11 +1,9 @@
-import { StyleSheet, View, Text, ImageBackground, Alert, Button } from 'react-native';
+import { StyleSheet, View, Text, ImageBackground } from 'react-native';
 import { Link } from 'expo-router';
 import { stylesPerso } from "@/src/styles/GeneralStyles";
 import { colorBlue } from "@/constants/Colors";
 import Marginer from '../components/personalized/Marginer';
-import React, { useEffect, useState } from "react";
-import moment from 'moment';
-import { Calendar } from 'react-native-calendars';
+import React, { useEffect } from "react";
 
 export default function WelcomeScreen() {
  const Bg = '../assets/photo/bg1.jpg'; 

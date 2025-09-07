@@ -1,8 +1,8 @@
 import { colorBlue } from '@/constants/Colors';
 import { page, stylesPerso, trajetbox } from '@/src/styles/GeneralStyles';
-import { StyleSheet, View, Text, ScrollView, Pressable, Image, ImageBackground } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Pressable, Image } from 'react-native';
 import React, { useEffect , useState } from 'react';
-import { Link , router } from 'expo-router';
+import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Marginer from '@/components/personalized/Marginer';
 import axios from 'axios';

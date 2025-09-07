@@ -11,6 +11,7 @@ export function PersonalizedTitle({ title , icon }: PropsWithChildren & { title:
     </View>
   );
 }
+
 const w = Dimensions.get('screen').width
 
 const styles = StyleSheet.create({

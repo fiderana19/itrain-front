@@ -5,7 +5,6 @@ import { StyleSheet, View, Text, Button, ScrollView, TextInput, Pressable, Modal
 import axios from 'axios'
 import React, { useState } from 'react';
 import { SelectList } from 'react-native-dropdown-select-list'
-import format from 'date-fns/format'
 import { Ionicons } from '@expo/vector-icons';
 import { Calendar } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,7 +15,6 @@ export default function SignupPageScreen() {
   const [selectdepart, setSelectDepart] = useState("")
   const [selectarrive, setSelectArrive] = useState("")
   const [selectedDate , setSelectedDate] = useState(null);
-  const [date_reservation , setDateReservation] = useState(new Date());
   const [show, setShow] = useState(false);
 
   const [edittrajet_id, setEditTrajetId] = useState("")

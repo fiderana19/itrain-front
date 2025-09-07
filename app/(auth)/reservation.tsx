@@ -1,16 +1,15 @@
 import Marginer from '@/components/personalized/Marginer';
-import { PersonalizedTitle } from '@/components/personalized/PersonalizedTitle';
 import { colorBlue } from '@/constants/Colors';
 import { stylesPerso, trajetbox } from '@/src/styles/GeneralStyles';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { printToFileAsync } from 'expo-print';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { shareAsync } from 'expo-sharing';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { Image, Button, StyleSheet, View, Text, ScrollView, ImageBackground, Pressable } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Pressable } from 'react-native';
 
 export default function HomeScreen() {
   const [reservations, setReservations] = useState([])
@@ -24,7 +23,6 @@ export default function HomeScreen() {
   const [heure_depart, setHeureDepart] = useState("")
   const [heure_arrive, setHeureArrive] = useState("")
   const [date_trajet , setSelectedDate] = useState(null);
-  const [dt , setDt] = useState("");
 
   useEffect(() => {
     verifyToken()

@@ -1,14 +1,13 @@
 import Marginer from '@/components/personalized/Marginer';
-import { PersonalizedTitle } from '@/components/personalized/PersonalizedTitle';
 import { colorBlue } from '@/constants/Colors';
 import { page, stylesPerso, trajetbox } from '@/src/styles/GeneralStyles';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { Image, Button, StyleSheet, View, Text, ScrollView, ImageBackground, Modal, TextInput, Pressable, Alert } from 'react-native';
+import { Button, StyleSheet, View, Text, ScrollView, Modal, TextInput, Pressable, Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
 export default function HomeScreen() {

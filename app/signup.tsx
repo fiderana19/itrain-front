@@ -4,7 +4,6 @@ import { page, stylesPerso } from '@/src/styles/GeneralStyles';
 import { StyleSheet, View , Text , Button , ScrollView , TextInput } from 'react-native';
 import axios from 'axios'
 import React, { useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link , useRouter } from 'expo-router';
 
 export default function SignupPageScreen() {
