@@ -5,7 +5,7 @@ const BASE_URL = BASE_API_URL;
 
 const axiosAuthInstance = axios.create({
     baseURL: BASE_URL,
-    headers: {
+    headers: { 
         "Content-Type": "application/json"
     }
 })
