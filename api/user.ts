@@ -24,5 +24,5 @@ export const deleteUser = async (id: any) => {
 }
 
 export const editUser = async (id: any, data: any) => {
-    return await axiosAuthInstance.get(`${USER_API_URL}/edit/${id}`, data);
+    return await axiosAuthInstance.patch(`${USER_API_URL}/edit/${id}`, data);
 }
