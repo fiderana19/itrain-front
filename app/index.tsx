@@ -6,13 +6,8 @@ import Marginer from '../components/personalized/Marginer';
 import React, { useEffect } from "react";
 
 export default function WelcomeScreen() {
- const Bg = '../assets/photo/bg1.jpg'; 
+ const Bg = '../assets/photo/bg1.jpg';   
 
-  useEffect(() => {
-   
-  }, [])
-
-  
   return (
     <View style={styles.container}>
       <ImageBackground source={require(Bg)} style={myhome.imgBg}>

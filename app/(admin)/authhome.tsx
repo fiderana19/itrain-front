@@ -4,10 +4,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { StyleSheet, View , Text , ScrollView } from 'react-native';
+import { useAuth } from '../../context/AuthContext';
 
 export default function HomeScreen() {
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
+    console.log("ett0", isAuthenticated)
     verifyToken()
   }, [])
   const verifyToken = async () => {

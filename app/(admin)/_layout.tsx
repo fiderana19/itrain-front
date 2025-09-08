@@ -1,12 +1,20 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Tabs, useRouter, useSegments } from 'expo-router';
+import React, { useEffect } from 'react';
 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useAuth } from '@/context/AuthContext';
 
 export default function TabLayout() {
+  const {token, isAuthenticated} = useAuth();
+  const router = useRouter();
+  	const segments = useSegments();
+  
   const colorScheme = useColorScheme();
+    useEffect(() => {
+    
+  }, [])
 
   return (
     <Tabs

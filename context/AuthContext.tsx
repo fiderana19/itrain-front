@@ -2,10 +2,10 @@ import { userLogin } from "@/api/user";
 import { HTTP_STATUS } from "@/constants/HttpStatus";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 type AuthContextProps = {
-    token?: string |null;
+    token?: string | null;
     isAuthenticated?: boolean;
     login: (email: any, motdepasse: any) => Promise<any>;
     logout: () => Promise<any>;
@@ -14,12 +14,19 @@ type AuthContextProps = {
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({children} : {children: ReactNode}) => {
-    const [token, setToken] = useState<any>(
-        AsyncStorage.getItem('token')
-    )
-
+    const [token, setToken] = useState<string | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const router = useRouter();
-    const isAuthenticated = !!token;
+
+    useEffect(() => {
+        async function getToken() {
+            const t = await AsyncStorage.getItem('token'); 
+            setToken(t);
+            const is = !!t;
+            setIsAuthenticated(is);
+        }
+        getToken();
+    }, [])
     
     const login = async (email: any, motdepasse: any) => {
         const response = await userLogin(email, motdepasse);
@@ -43,7 +50,7 @@ export const AuthProvider = ({children} : {children: ReactNode}) => {
     const logout = async () => {
         setToken(null);
         localStorage.removeItem('token');
-        router.replace('/')
+        router.replace('/');
     }
 
     return (
