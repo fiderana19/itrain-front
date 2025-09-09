@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { AuthProvider } from '@/context/AuthContext';
 import { useAuth } from '../context/AuthContext';
+import Toast from 'react-native-toast-message'
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -27,6 +28,7 @@ export default function RootLayout() {
   return (
       <AuthProvider>
         <StackLayout />
+        <Toast />
       </AuthProvider>
   );
 }

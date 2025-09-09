@@ -7,6 +7,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Marginer from '@/components/personalized/Marginer';
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
+import { getUserById } from '@/api/user';
+import Toast from 'react-native-toast-message';
+import showToast from '@/utils/toast';
 
 export default function HomeScreen() {
   const Manakara = '../../assets/photo/man-user-circle-icon.png';
@@ -18,27 +21,24 @@ export default function HomeScreen() {
   }, [])
 
   const fetchUser = async () => {
-    const token = await AsyncStorage.getItem('token')
-    const uid = await AsyncStorage.getItem('uid')
+    const token = await AsyncStorage.getItem('token');
+    if(token) {
+      const decodedToken = JSON.parse(atob(token.split('.')[1]));
 
-    try {
-      const response  = await axios({
-        headers: {
-          Authorization: `Bearer ${ token }`
-        },
-        method: 'GET',
-        url: `http://192.168.43.184:3002/user/get/${ uid }`,
-      })
-        setUser(response.data[0])       
-    } catch (error) {
-      console.log(error)
+      const response = await getUserById(decodedToken.id);
+      setUser(response.data[0])
     }
   }
 
   function handleLogout() {
-    AsyncStorage.setItem('token' , '')
+    // AsyncStorage.setItem('token' , '')
     
-    router.replace('/home')           
+    // router.replace('/home')   
+    showToast({
+      type: 'success',
+      title: 'bfjbvj',
+      message: 'gfurehbvhjv',
+    })   
   }
   const verifyToken = async () => {
     const token = await AsyncStorage.getItem('token')

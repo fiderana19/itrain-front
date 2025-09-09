@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { StyleSheet, View , Text , ScrollView } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
+import Toast from 'react-native-toast-message';
 
 export default function HomeScreen() {
   const { isAuthenticated } = useAuth();
@@ -12,6 +13,12 @@ export default function HomeScreen() {
   useEffect(() => {
     console.log("ett0", isAuthenticated)
     verifyToken()
+
+    Toast.show({
+      type: 'success',
+      text1: 'Hello',
+      text2: 'This is some something 👋'
+    });
   }, [])
   const verifyToken = async () => {
     const token = await AsyncStorage.getItem('token')

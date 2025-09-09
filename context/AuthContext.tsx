@@ -38,9 +38,9 @@ export const AuthProvider = ({children} : {children: ReactNode}) => {
 
             const decodedToken = JSON.parse(atob(data.split('.')[1]));
             if(decodedToken.role === "admin") {
-                router.replace("/authhome")
+                router.replace("/adminhome")
             } else {
-                router.replace('/signedhome')
+                router.replace('/clienthome')
             }
         } else {
             console.log("erreur")
