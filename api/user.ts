@@ -3,8 +3,8 @@ import axiosAuthInstance, { axiosInstance } from "./Config";
 
 const USER_API_URL = `${BASE_API_URL}/user`;
 
-export const userLogin = async (email: any, motdepasse: any) => {
-    return await axiosInstance.post(`${USER_API_URL}/login`, {email, motdepasse});
+export const userLogin = async (data: any) => {
+    return await axiosInstance.post(`${USER_API_URL}/login`, data);
 }
 
 export const userSignup = async (data: any) => {
@@ -23,6 +23,6 @@ export const deleteUser = async (id: any) => {
     return await axiosAuthInstance.delete(`${USER_API_URL}/delete/${id}`);
 }
 
-export const editUser = async (id: any, data: any) => {
-    return await axiosAuthInstance.patch(`${USER_API_URL}/edit/${id}`, data);
+export const editUser = async (data: any) => {
+    return await axiosAuthInstance.patch(`${USER_API_URL}/edit/${data?.id}`, data);
 }

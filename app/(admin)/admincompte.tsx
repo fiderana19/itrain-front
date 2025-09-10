@@ -10,25 +10,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { getUserById } from '@/api/user';
 import Toast from 'react-native-toast-message';
 import showToast from '@/utils/toast';
+import useGetUserById from '@/hooks/api/useGetUserById';
+import { useAuth } from '../../context/AuthContext';
 
 export default function HomeScreen() {
+  const { token } = useAuth();
   const Manakara = '../../assets/photo/man-user-circle-icon.png';
-  const [user , setUser] = useState({ utilisateur_id: "" , nom: "" , email: "" , telephone: "" })
-
-  useEffect(() => {
-    verifyToken()
-    fetchUser()
-  }, [])
-
-  const fetchUser = async () => {
-    const token = await AsyncStorage.getItem('token');
-    if(token) {
-      const decodedToken = JSON.parse(atob(token.split('.')[1]));
-
-      const response = await getUserById(decodedToken.id);
-      setUser(response.data[0])
-    }
-  }
+  const { data: user, isLoading, refetch } = useGetUserById(token ? JSON.parse(atob(token.split('.')[1])).id : '');
 
   function handleLogout() {
     // AsyncStorage.setItem('token' , '')
@@ -40,35 +28,31 @@ export default function HomeScreen() {
       message: 'gfurehbvhjv',
     })   
   }
-  const verifyToken = async () => {
-    const token = await AsyncStorage.getItem('token')
-
-    if(token === '') {
-      router.replace('/home')           
-    }
-  }
-
 
   return (
       <ScrollView style={stylesPerso.container}>
-        <View style={page.paddingnormal}>
+        {
+          user &&
+                  <View style={page.paddingnormal}>
           <Marginer value={15} />
           <Text style={styles.userfont}> Les informations du compte </Text>
           <Marginer value={15} />
           <Image source={require(Manakara)} style={styles.photo} /> 
           <Marginer value={25} />
           <Text> Nom :  </Text>
-          <Text style={styles.userfont}> { user.nom } </Text>
+          <Text style={styles.userfont}> { user[0].nom } </Text>
           <Text> Telephone :  </Text>
-          <Text style={styles.userfont}> { user.telephone } </Text>
+          <Text style={styles.userfont}> { user[0].telephone } </Text>
           <Text> Adresse mail :  </Text>
-          <Text style={styles.userfont}> { user.email } </Text>
+          <Text style={styles.userfont}> { user[0].email } </Text>
           <Marginer value={30} />
           <Pressable style={stylesPerso.btnPrimary} onPress={handleLogout} >
             <Ionicons color={'#fff'} name='log-out' style={trajetbox.dispoicon} />
             <Text style={{color: '#fff'}}>Se deconnecter</Text>
           </Pressable> 
         </View>
+        }
+
       </ScrollView>
   );
 }

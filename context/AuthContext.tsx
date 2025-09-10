@@ -29,7 +29,8 @@ export const AuthProvider = ({children} : {children: ReactNode}) => {
     }, [])
     
     const login = async (email: any, motdepasse: any) => {
-        const response = await userLogin(email, motdepasse);
+        const data = { email, motdepasse }
+        const response = await userLogin(data);
         if(response?.status === HTTP_STATUS.OK || response?.status === HTTP_STATUS.CREATED) {
             const data = response?.data.token;
 

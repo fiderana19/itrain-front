@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query"
 import { QUERYCACHEKEY } from "./QueryCacheKey"
-import { getUserById } from "@/api/user"
+import { getAllUser } from "@/api/user"
 import { useEffect } from "react"
 import showToast from "@/utils/toast"
 import { TOAST_TYPE } from "@/constants/Toast_type"
 
-export default function useGetUserById (id: string) {
+export default function useGetAllUser () {
     const { data, isError, error, refetch, isLoading } = useQuery({
-        queryKey: [QUERYCACHEKEY.USERS, id],
-        queryFn: () => getUserById(id),
+        queryKey: [QUERYCACHEKEY.USERS],
+        queryFn: () => getAllUser(),
         staleTime: Infinity
     })
 
@@ -17,7 +17,7 @@ export default function useGetUserById (id: string) {
             showToast({
                 type: TOAST_TYPE.ERROR,
                 title: "Erreur",
-                message: "Erreur lors de la recuperation de l'utilisateur !"
+                message: "Erreur lors de la recuperation des utilisateurs !"
             })
         }
     }, [error])

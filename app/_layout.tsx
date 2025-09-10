@@ -51,9 +51,9 @@ const StackLayout = () => {
     if(token) {
       const decodedToken = JSON.parse(atob(token.split('.')[1]));
       if(decodedToken.role === "admin" && isAuthenticated && inAdminGroup) {
-        router.replace("/authhome")
+        router.replace("/adminhome")
       } else if(decodedToken.role === "client" && isAuthenticated && inClientGroup) {
-        router.replace('/signedhome')
+        router.replace('/clienthome')
       }
     } else {
       router.replace('/home')
