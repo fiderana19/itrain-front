@@ -23,6 +23,6 @@ export const deleteReservation = async (id: any) => {
     return await axiosAuthInstance.delete(`${RESERVATION_API_URL}/delete/${id}`);
 }
 
-export const editReservation = async (id: any, data: any) => {
-    return await axiosAuthInstance.patch(`${RESERVATION_API_URL}/edit/${id}`, data);
+export const editReservation = async (data: any) => {
+    return await axiosAuthInstance.patch(`${RESERVATION_API_URL}/edit/${data.id}`, data);
 }
