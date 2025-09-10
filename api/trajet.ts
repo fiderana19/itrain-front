@@ -23,6 +23,6 @@ export const deleteTrajet = async (id: any) => {
     return await axiosAuthInstance.delete(`${TRAJET_API_URL}/delete/${id}`);
 }
 
-export const editTrajet = async (id: any, data: any) => {
-    return await axiosAuthInstance.patch(`${TRAJET_API_URL}/edit/${id}, data`);
+export const editTrajet = async (data: any) => {
+    return await axiosAuthInstance.patch(`${TRAJET_API_URL}/edit/${data.id}, data`);
 }
