@@ -19,6 +19,6 @@ export const deleteTrain = async (id: any) => {
     return await axiosAuthInstance.delete(`${TRAIN_API_URL}/delete/${id}`);
 }
 
-export const editTrain = async (id: any, data: any) => {
-    return await axiosAuthInstance.patch(`${TRAIN_API_URL}/edit/${id}`, data);
+export const editTrain = async (data: any) => {
+    return await axiosAuthInstance.patch(`${TRAIN_API_URL}/edit/${data.id}`, data);
 }
