@@ -6,6 +6,8 @@ import 'react-native-reanimated';
 import { AuthProvider } from '@/context/AuthContext';
 import { useAuth } from '../context/AuthContext';
 import Toast from 'react-native-toast-message'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -14,6 +16,7 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+  const queryClient = new QueryClient();
 
   useEffect(() => {
     if (loaded) {
@@ -26,10 +29,13 @@ export default function RootLayout() {
   }
 
   return (
+    <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <StackLayout />
+        <ReactQueryDevtools />
         <Toast />
       </AuthProvider>
+    </QueryClientProvider>
   );
 }
 
