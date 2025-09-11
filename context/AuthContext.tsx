@@ -1,5 +1,7 @@
 import { userLogin } from "@/api/user";
 import { HTTP_STATUS } from "@/constants/HttpStatus";
+import { TOAST_TYPE } from "@/constants/Toast_type";
+import showToast from "@/utils/toast";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
@@ -7,7 +9,7 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 type AuthContextProps = {
     token?: string | null;
     isAuthenticated?: boolean;
-    login: (email: any, motdepasse: any) => Promise<any>;
+    login: (data: any) => Promise<any>;
     logout: () => Promise<any>;
 }
 
@@ -28,8 +30,7 @@ export const AuthProvider = ({children} : {children: ReactNode}) => {
         getToken();
     }, [])
     
-    const login = async (email: any, motdepasse: any) => {
-        const data = { email, motdepasse }
+    const login = async (data: any) => {
         const response = await userLogin(data);
         if(response?.status === HTTP_STATUS.OK || response?.status === HTTP_STATUS.CREATED) {
             const data = response?.data.token;
@@ -44,7 +45,11 @@ export const AuthProvider = ({children} : {children: ReactNode}) => {
                 router.replace('/clienthome')
             }
         } else {
-            console.log("erreur")
+            showToast({
+                type: TOAST_TYPE.ERROR,
+                title: "Erreur",
+                message: "Erreur de la connexion !"
+            })
         }
     }
     

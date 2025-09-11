@@ -2,53 +2,22 @@ import Marginer from '@/components/personalized/Marginer';
 import { colorBlue } from '@/constants/Colors';
 import { page, stylesPerso } from '@/src/styles/GeneralStyles';
 import { StyleSheet, View , Text , Button , ScrollView , TextInput } from 'react-native';
-import axios from 'axios'
-import React, { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Link, useRouter } from 'expo-router'
+import React from 'react';
+import { Link } from 'expo-router'
 import { useAuth } from '../../context/AuthContext';
+import { Controller, useForm } from 'react-hook-form'
+import { LoginUserType } from '@/types/user.type';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { LoginValidation } from '@/validation/user.validation';
 
 export default function LoginPageScreen() {
-  const [email, setEmail] = useState("")
-  const [motdepasse, setMotdepasse] = useState("")
-  const router = useRouter();
+  const { handleSubmit: submit, formState: { errors }, control } = useForm({
+    resolver: yupResolver(LoginValidation)
+  })
   const { login }  = useAuth();
 
-  useEffect(() => {
-  }, [])
-  
-
-  const submitForm = async (e: any) => {
-    const data = {email, motdepasse};
-    await login(email, motdepasse);
-
-    try {   
-      const response  = await axios({
-        method: 'POST',
-        url: `http://localhost:3002/user/login`,
-        data: {email , motdepasse}
-      })    
-      const decodedToken = JSON.parse(atob(response.data.token.split('.')[1]));
-
-      console.log(response.data.token, decodedToken)  
-        
-        // await AsyncStorage.setItem('token' , response.data.token)
-        // AsyncStorage.setItem('uid' ,  response.data.uid.toString())
-        // await AsyncStorage.setItem('isadmin' , response.data.isadmin)
-
-        // const token = await AsyncStorage.getItem('token')
-        // const uid = await AsyncStorage.getItem('uid')
-        // const isadmin = await AsyncStorage.getItem('isadmin')
-
-        // if(isadmin == '1') {
-        //   router.replace('/authhome')          
-        // }
-        // if(isadmin == '0') {
-        //   router.replace('/signedhome')
-        // }
-    } catch (error) {
-      console.log(error)
-    }
+  const loginSubmit = async (data: LoginUserType) => {
+    await login(data);
   }
 
   return (
@@ -61,25 +30,37 @@ export default function LoginPageScreen() {
           <Text>Veuillez vous connecter pour pouvoir reserver des billets </Text>
           <Marginer value={20} />  
           <View>
-            <Text>Adresse mail ou Telephone : </Text>
-            <TextInput
-            style={stylesPerso.inputReal}
-            value={email}
-            onChangeText={  (e : any)=>{
-              setEmail(e)
-            }}
+            <Text>Adresse mail : </Text>
+            <Controller 
+              name="email"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  style={stylesPerso.inputReal}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
             />
+            {errors.email && <Text style={styles.errors}>{errors.email.message}</Text>}
             <Text>Mot de passe : </Text>
-            <TextInput
-            style={stylesPerso.inputReal}
-            value={motdepasse}
-            onChangeText={(e : any)=>{
-              setMotdepasse(e)
-            }}
+            <Controller 
+              name="motdepasse"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  style={stylesPerso.inputReal}
+                  secureTextEntry
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
             />
+            {errors.motdepasse && <Text style={styles.errors}>{errors.motdepasse.message}</Text>}
+            <Marginer value={5} />  
             <Button
-            title="Se connecter"
-            onPress={submitForm}
+              title="Se connecter"
+              onPress={submit(loginSubmit)}
             />
           </View>
           <Marginer value={40} />  
@@ -90,13 +71,13 @@ export default function LoginPageScreen() {
 }
 
 const styles = StyleSheet.create({
-  comptepage : {
-  },
   font : {
     color : colorBlue ,
     fontSize : 27 , 
     textAlign : 'center' , 
-    fontWeight : 'bold'
+    fontWeight : 'bold',
+    marginTop: 5,
+    marginBottom: 15,
   },
   input: {
     borderWidth: 2,
@@ -106,11 +87,15 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     padding: 10,
     borderRadius: 5,
-    marginBottom: 7,
     color: "black"
   },
   link: {
     textDecorationLine: 'underline',
     textAlign: 'center'
+  },
+  errors: {
+    marginBottom: 5,
+    color: 'red',
+    textAlign: "left"
   }
 });

@@ -66,7 +66,6 @@ const StackLayout = () => {
 		    <Stack.Screen name="(visitor)" options={{ headerShown: false }} />
         <Stack.Screen name="(admin)" options={{ headerShown: false }} />
         <Stack.Screen name="(client)" options={{ headerShown: false }} />
-        <Stack.Screen name="signup" options={{ headerShown : false}} />
         <Stack.Screen name="+not-found" options={{ headerShown : false}}  />
       </Stack> 
 	);
