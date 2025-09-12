@@ -1,142 +1,80 @@
 import Marginer from '@/components/personalized/Marginer';
 import { colorBlue } from '@/constants/Colors';
 import { page, stylesPerso, trajetbox } from '@/src/styles/GeneralStyles';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { router } from 'expo-router';
 import {printToFileAsync} from 'expo-print'
 import { shareAsync } from 'expo-sharing'
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { StyleSheet, View, Text, ScrollView, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import moment from 'moment';
+import { useAuth } from '../../context/AuthContext';
+import useGetReservationByBillet from '@/hooks/api/useGetReservationByBillet';
 
 export default function HomeScreen() {
-  const [billets , setBillets] = useState([])
-  const [numero_train, setNumeroTrain] = useState("")
-  const [classe, setClasse] = useState("")
-  const [nbr_place, setNbrPlace] = useState("")
-  const [nom, setNom] = useState("")
-  const [telephone, setTelephone] = useState("")
-  const [gare_depart, setGareDepart] = useState("")
-  const [gare_arrive, setGareArrive] = useState("")
-  const [heure_depart, setHeureDepart] = useState("")
-  const [heure_arrive, setHeureArrive] = useState("")
-  const [date_trajet , setSelectedDate] = useState(null);
-  const [dt , setDt] = useState("");
+  const { token } = useAuth();
+  const { data: billets, isLoading, refetch } = useGetReservationByBillet(token ? JSON.parse(atob(token.split('.')[1])).id : '');
 
-  useEffect(() => {
-    fetchBillet()
-
-    verifyToken()
-  }, [])
-  const verifyToken = async () => {
-    const token = await AsyncStorage.getItem('token')
-
-    if(token === '') {
-      router.replace('/home')           
-    }
-  }
-
-  const fetchBillet = async () => {
-    const token = await AsyncStorage.getItem('token')
-    const uid = await AsyncStorage.getItem('uid')
-
-    try {
-      const response  = await axios({
-        headers: {
-          Authorization: `Bearer ${ token }`
-        },
-        method: 'GET',
-        url: `http://192.168.43.184:3002/reservation/billet/${ uid }`,
-      })
-      console.log(response.data)
-        setBillets(response.data)     
-    } catch (error) {
-      console.log(error)
-    }
-  }
-  const handleGenerate = async (item: any) => {
-    setNumeroTrain(item.numero_train)
-    setClasse(item.classe)
-    setNbrPlace(item.nbr_place)
-    setNom(item.nom)
-    setTelephone(item.telephone)
-    setGareDepart(item.gare_depart)
-    setGareArrive(item.gare_arrive)
-    setHeureDepart(item.heure_depart)
-    setHeureArrive(item.heure_arrive)
-    setSelectedDate(item.date_trajet)
-    console.log(item.date_trajet)
-
-    console.log("beau", numero_train,classe, nbr_place, nom, telephone,gare_depart,gare_arrive, heure_depart,heure_arrive,date_trajet )
-
-    generateTicket()
-  }
-  const html = `
-  <html>
-  <body>
-  <div style="padding: 25px;font-weight: normal; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">
-      <div style="display: flex;justify-content: space-between;">
-          <div>
-              <h2 style="color: darkcyan;font-size: 50px; font-weight: bolder;">i-train</h2>
+  const generateTicket = async (data: any) => {
+    const html = `
+      <html>
+      <body>
+      <div style="padding: 25px;font-weight: normal; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">
+          <div style="display: flex;justify-content: space-between;">
+              <div>
+                  <h2 style="color: darkcyan;font-size: 50px; font-weight: bolder;">i-train</h2>
+              </div>
+              <div style="text-align: right;">
+                      <h3 style="font-size: 28px;color: gray;font-weight: 500;">Départ</h3>
+                      <h3 style="font-size: 35px;font-weight: 500;">${ data.date_trajet }</h3>
+              </div>
+          </div> 
+          <div style="display: flex; justify-content: space-between;margin: 25px 0;">
+              <div>
+                  <h3 style="font-size: 45px; font-weight: bolder;">${ data.heure_depart }</h3>
+                  <h3 style="font-size: 28px;font-weight: 500;">${ data.gare_depart }</h3>
+              </div>
+              <div style="font-size: 35px;color: gray;display: flex;flex-direction: column;justify-content: center;"><p>------></p></div>
+              <div style="text-align: right;">
+                  <h3 style="font-size: 45px; font-weight: bolder;">${ data.heure_arrive }</h3>
+                  <h3 style="font-size: 28px;font-weight: 500;">${ data.gare_arrive }</h3>
+              </div>
           </div>
-          <div style="text-align: right;">
-                  <h3 style="font-size: 28px;color: gray;font-weight: 500;">Départ</h3>
-                  <h3 style="font-size: 35px;font-weight: 500;">${ date_trajet }</h3>
+          <div style="display: flex; justify-content: space-between;margin: 25px 0;">
+              <div>
+                  <h3 style="font-weight: 500;color: gray;font-size: 28px;">TRAIN</h3>
+                  <h3 style="font-weight: 500;font-size: 30px;">${ data.numero_train }</h3>
+              </div>
+              <div>
+                  <h3  style="font-weight: 500;color: gray;font-size: 28px;">CLASSE</h3>
+                  <h3 style="font-weight: 500;font-size: 30px;">${ data.classe }</h3>
+              </div>
+              <div style="text-align: right;">
+                  <h3 style="font-weight: 500;color: gray;font-size: 28px;">NOMBRE DE PLACE</h3>
+                  <h3 style="font-weight: 500;font-size: 30px;">${ data.nbr_place }</h3>
+              </div>
           </div>
-          
-      </div> 
-      <div style="display: flex; justify-content: space-between;margin: 25px 0;">
-          <div>
-              <h3 style="font-size: 45px; font-weight: bolder;">${ heure_depart }</h3>
-              <h3 style="font-size: 28px;font-weight: 500;">${ gare_depart }</h3>
+          <div style="display: flex; justify-content: space-between;margin: 25px 0;">
+              <div>
+                  <h3  style="font-weight: 500;color: gray;font-size: 28px;">PASSAGER</h3>
+                  <h3 style="font-weight: 500;font-size: 30px;">${ data.nom }</h3>
+              </div>
+              <div style="text-align: right;">
+                  <h3  style="font-weight: 500;color: gray;font-size: 28px;">TELEPHONE</h3>
+                  <h3 style="font-weight: 500;font-size: 30px;">${ data.telephone }</h3>
+              </div>
           </div>
-          <div style="font-size: 35px;color: gray;display: flex;flex-direction: column;justify-content: center;"><p>------></p></div>
-          <div style="text-align: right;">
-              <h3 style="font-size: 45px; font-weight: bolder;">${ heure_arrive }</h3>
-              <h3 style="font-size: 28px;font-weight: 500;">${ gare_arrive }</h3>
-          </div>
-      </div>
-      <div style="display: flex; justify-content: space-between;margin: 25px 0;">
-          <div>
-              <h3 style="font-weight: 500;color: gray;font-size: 28px;">TRAIN</h3>
-              <h3 style="font-weight: 500;font-size: 30px;">${ numero_train }</h3>
-          </div>
-          <div>
-              <h3  style="font-weight: 500;color: gray;font-size: 28px;">CLASSE</h3>
-              <h3 style="font-weight: 500;font-size: 30px;">${ classe }</h3>
-          </div>
-          <div style="text-align: right;">
-              <h3 style="font-weight: 500;color: gray;font-size: 28px;">NOMBRE DE PLACE</h3>
-              <h3 style="font-weight: 500;font-size: 30px;">${ nbr_place }</h3>
-          </div>
-      </div>
-      <div style="display: flex; justify-content: space-between;margin: 25px 0;">
-          <div>
-              <h3  style="font-weight: 500;color: gray;font-size: 28px;">PASSAGER</h3>
-              <h3 style="font-weight: 500;font-size: 30px;">${ nom }</h3>
-          </div>
-          <div style="text-align: right;">
-              <h3  style="font-weight: 500;color: gray;font-size: 28px;">TELEPHONE</h3>
-              <h3 style="font-weight: 500;font-size: 30px;">${ telephone }</h3>
-          </div>
-      </div>
-  </div>
-</body>
-  </html>
-  `
-
-  const generateTicket = async () => {
+        </div>
+      </body>
+      </html>
+      `
     const file = printToFileAsync({
       html: html,
       base64: false
     })
 
-    await shareAsync((await file).uri)
+    await shareAsync((await file)?.uri)
   }
 
-  
   const formater = (date: any) => {
     return moment(date).format('YYYY-MM-DD')
   }
@@ -151,7 +89,7 @@ export default function HomeScreen() {
             </Text>
             <Marginer value={15} />
           </View>
-          { billets && billets.map((trajet: any, index) => (
+          { billets && billets.map((trajet: any, index: any) => (
             <View style={trajetbox.item} key={index}>
               <Text style={trajetbox.itemtitle}>
                 { trajet.gare_depart } vers { trajet.gare_arrive }
@@ -184,7 +122,7 @@ export default function HomeScreen() {
                 Montant total:   { trajet.billet*trajet.nbr_place } MGA
               </Text>
               <Marginer value={10} />
-              <Pressable onPress={()=>{handleGenerate(trajet)}}>
+              <Pressable onPress={()=>{generateTicket(trajet)}}>
                   <View style={stylesPerso.btnPrimary}>
                     <Ionicons color={'#fff'} name='ticket-outline' style={stylesPerso.iconfont} />
                     <Text style={{color: '#fff'}}>Generer un billet</Text>
