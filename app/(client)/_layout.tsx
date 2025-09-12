@@ -1,6 +1,5 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -15,42 +14,41 @@ export default function TabLayout() {
         headerShown: false,
       }}>
       <Tabs.Screen
-        name="signedhome"
+        name="clienthome"
         options={{
-          title: 'Accueil',
+          title: '',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="signedsearch"
+        name="clientsearch"
         options={{
-          title: 'Rechercher',
+          title: '',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'search' : 'search-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="ticket"
+        name="clientticket"
         options={{
-          title: 'Ticket',
+          title: '',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'ticket' : 'ticket-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="signedcompte"
+        name="clientcompte"
         options={{
-          title: 'Compte',
+          title: '',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
           ),
         }}
       />
-
     </Tabs>
     
   );

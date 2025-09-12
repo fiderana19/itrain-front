@@ -1,20 +1,11 @@
-import { Tabs, useRouter, useSegments } from 'expo-router';
-import React, { useEffect } from 'react';
-
+import { Tabs } from 'expo-router';
+import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { useAuth } from '@/context/AuthContext';
 
-export default function TabLayout() {
-  const {token, isAuthenticated} = useAuth();
-  const router = useRouter();
-  	const segments = useSegments();
-  
+export default function TabLayout() {  
   const colorScheme = useColorScheme();
-    useEffect(() => {
-    
-  }, [])
 
   return (
     <Tabs
@@ -23,45 +14,45 @@ export default function TabLayout() {
         headerShown: false,
       }}>
       <Tabs.Screen
-        name="authhome"
+        name="adminhome"
         options={{
-          title: 'Accueil',
+          title: '',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="reservation"
+        name="adminreservation"
         options={{
-          title: 'Reservation',
+          title: '',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'search' : 'search-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="trajet"
+        name="admintrajet"
         options={{
-          title: 'Trajet',
+          title: '',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'speedometer-sharp' : 'speedometer-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="train"
+        name="admintrain"
         options={{
-          title: 'Train',
+          title: '',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'subway' : 'subway-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="authcompte"
+        name="admincompte"
         options={{
-          title: 'Compte',
+          title: '',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
           ),
