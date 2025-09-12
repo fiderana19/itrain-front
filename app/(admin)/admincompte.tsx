@@ -1,56 +1,46 @@
 import { colorBlue } from '@/constants/Colors';
 import { page, stylesPerso, trajetbox } from '@/src/styles/GeneralStyles';
-import { StyleSheet, View, Text, ScrollView, Pressable, Image, ImageBackground } from 'react-native';
-import React, { useEffect , useState } from 'react';
-import { Link , router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StyleSheet, View, Text, ScrollView, Pressable, Image } from 'react-native';
+import React, {  } from 'react';
+import { router } from 'expo-router';
 import Marginer from '@/components/personalized/Marginer';
-import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
-import { getUserById } from '@/api/user';
-import Toast from 'react-native-toast-message';
-import showToast from '@/utils/toast';
 import useGetUserById from '@/hooks/api/useGetUserById';
 import { useAuth } from '../../context/AuthContext';
 
 export default function HomeScreen() {
-  const { token } = useAuth();
-  const Manakara = '../../assets/photo/man-user-circle-icon.png';
+  const { token, logout } = useAuth();
+  const Profile = '../../assets/photo/man-user-circle-icon.png';
   const { data: user, isLoading, refetch } = useGetUserById(token ? JSON.parse(atob(token.split('.')[1])).id : '');
 
-  function handleLogout() {
-    // AsyncStorage.setItem('token' , '')
-    
-    // router.replace('/home')   
-    showToast({
-      type: 'success',
-      title: 'bfjbvj',
-      message: 'gfurehbvhjv',
-    })   
+  async function handleLogout() {
+    await logout();
+
+    router.replace('/home');     
   }
 
   return (
       <ScrollView style={stylesPerso.container}>
         {
           user &&
-                  <View style={page.paddingnormal}>
-          <Marginer value={15} />
-          <Text style={styles.userfont}> Les informations du compte </Text>
-          <Marginer value={15} />
-          <Image source={require(Manakara)} style={styles.photo} /> 
-          <Marginer value={25} />
-          <Text> Nom :  </Text>
-          <Text style={styles.userfont}> { user[0].nom } </Text>
-          <Text> Telephone :  </Text>
-          <Text style={styles.userfont}> { user[0].telephone } </Text>
-          <Text> Adresse mail :  </Text>
-          <Text style={styles.userfont}> { user[0].email } </Text>
-          <Marginer value={30} />
-          <Pressable style={stylesPerso.btnPrimary} onPress={handleLogout} >
-            <Ionicons color={'#fff'} name='log-out' style={trajetbox.dispoicon} />
-            <Text style={{color: '#fff'}}>Se deconnecter</Text>
-          </Pressable> 
-        </View>
+          <View style={page.paddingnormal}>
+            <Marginer value={15} />
+            <Text style={styles.userfont}> Les informations du compte </Text>
+            <Marginer value={15} />
+            <Image source={require(Profile)} style={styles.photo} /> 
+            <Marginer value={25} />
+            <Text> Nom :  </Text>
+            <Text style={styles.userfont}> { user[0].nom } </Text>
+            <Text> Telephone :  </Text>
+            <Text style={styles.userfont}> { user[0].telephone } </Text>
+            <Text> Adresse mail :  </Text>
+            <Text style={styles.userfont}> { user[0].email } </Text>
+            <Marginer value={30} />
+            <Pressable style={stylesPerso.btnPrimary} onPress={handleLogout} >
+              <Ionicons color={'#fff'} name='log-out' style={trajetbox.dispoicon} />
+              <Text style={{color: '#fff'}}>Se deconnecter</Text>
+            </Pressable> 
+          </View>
         }
 
       </ScrollView>
