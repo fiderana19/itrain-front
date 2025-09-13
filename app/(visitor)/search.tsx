@@ -2,21 +2,23 @@ import Marginer from '@/components/personalized/Marginer';
 import { colorBlue } from '@/constants/Colors';
 import { page, stylesPerso, trajetbox } from '@/src/styles/GeneralStyles';
 import { StyleSheet, View , Text , Button , ScrollView , TextInput } from 'react-native';
-import axios from 'axios'
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Calendar } from 'react-native-calendars';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link } from 'expo-router';
 import { SelectList } from 'react-native-dropdown-select-list';
 import moment from 'moment';
+import { Controller, useForm } from 'react-hook-form';
+import { SearchTrajetType } from '@/types/trajet.type';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { SearchTrajetValidation } from '@/validation/trajet.validation';
+import useSearchTrajet from '@/hooks/api/useSearchTrajet';
 
 export default function SignupPageScreen() {
-  const [trajets , setTrajets] = useState([])
-  const [selectdepart, setSelectDepart] = useState("")
-  const [selectarrive, setSelectArrive] = useState("")
-  const [selectedDate , setSelectedDate] = useState(null);
-  const [noItem , setNoItem] = useState(false);
+  const { handleSubmit: submit, formState: { errors }, control, setValue } = useForm<SearchTrajetType>({
+    resolver: yupResolver(SearchTrajetValidation)
+  });
+  const { mutateAsync: search, data: trajets } = useSearchTrajet();
   const [show, setShow] = useState(false);
   const ville: any = [
     {key: 'Antananarivo', value: "Antananarivo"},
@@ -25,30 +27,9 @@ export default function SignupPageScreen() {
     {key: 'Manakara', value: "Manakara"},
     {key: 'Toamasina', value: "Toamasina"},
   ]
-  useEffect(() => {
 
-  }, [])
-
-
-  const searchTrajet = async () => {
-    const token = await AsyncStorage.getItem('token')
-    console.log(selectdepart , 'depart' , selectarrive , 'arrive', selectedDate )
-
-    try {
-      const response  = await axios({
-        headers: {
-          Authorization: `Bearer ${ token }`
-        },
-        method: 'POST',
-        url: `http://192.168.43.184:3002/trajet/search`,
-        data: {depart: selectdepart, arrive: selectarrive, date: selectedDate }
-      })
-      console.log(response.data)
-      setTrajets(response.data)
-        setNoItem(true)
-    } catch (error) {
-      console.log(error, 'eto') 
-    }
+  const searchTrajet = async (data: SearchTrajetType) => {
+    await search(data);
   }
 
   const showCalendar = () => {
@@ -56,7 +37,7 @@ export default function SignupPageScreen() {
   }
 
   const handleDayPress = (day: any) => {    
-    setSelectedDate(day.dateString)
+    setValue('date', day.dateString)
 
     setShow(false)
   }
@@ -75,30 +56,50 @@ export default function SignupPageScreen() {
           <Marginer value={15} />  
           <View>
             <Text>Gare de depart : </Text>
-            <SelectList 
-              data={ville}
-              setSelected={setSelectDepart}
-              searchPlaceholder='Saisir la ville'
-              placeholder='Gare de depart'
-              boxStyles={{borderRadius:5,paddingVertical:10}}
-             />
+            <Controller 
+              name="depart"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <SelectList 
+                  data={ville}
+                  setSelected={onChange}
+                  searchPlaceholder='Saisir la ville'
+                  placeholder='Gare de depart'
+                  boxStyles={{borderRadius:5,paddingVertical:10}}
+                />
+              )}
+            />
+            {errors.depart && <Text style={styles.errors}>{errors.depart.message}</Text>}
              <Marginer value={5} />
             <Text>Gare d'arrivé : </Text>
-            <SelectList 
-              data={ville}
-              setSelected={setSelectArrive}
-              searchPlaceholder="Saisir la ville"
-              placeholder="Gare d'arrivé"
-              boxStyles={{borderRadius:5,paddingVertical:10}}
-             />
+            <Controller 
+              name="arrive"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <SelectList 
+                  data={ville}
+                  setSelected={onChange}
+                  searchPlaceholder='Saisir la ville'
+                  placeholder='Gare de depart'
+                  boxStyles={{borderRadius:5,paddingVertical:10}}
+                />
+              )}
+            />
+            {errors.arrive && <Text style={styles.errors}>{errors.arrive.message}</Text>}
             <Marginer value={5} />
-
             <Text>Date : </Text>
             <View style={styles.calendarview}>
               <Ionicons  name='calendar' style={styles.calendaricon} onPress={showCalendar} /> 
-              <TextInput
-              style={styles.input}
-              value={(selectedDate) ? (selectedDate) : 'Selectionner une date'}
+              <Controller 
+                name="date"
+                control={control}
+                render={({ field: { value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    value={value}
+                    aria-disabled
+                  />
+                )}
               />
             </View>
             {show && (
@@ -107,17 +108,18 @@ export default function SignupPageScreen() {
             style={styles.cal}
             />
             )}
+            {errors.date && <Text style={styles.errors}>{errors.date.message}</Text>}
             <Button
             title="Rechercher"
-            onPress={searchTrajet}
+            onPress={submit(searchTrajet)}
             />
           </View>
           <Marginer value={50} />  
-          {noItem && trajets.length === 0 ? <View>
+          { trajets?.data.length === 0 && <View>
             <Ionicons style={styles.iconno} name='close' />
             <Text style={styles.textno}>Pas de trajets disponibles</Text>
-          </View>: <></>}
-          {trajets && trajets.map((trajet: any, index) => (
+          </View>}
+          {trajets?.data && trajets?.data.map((trajet: any, index: any) => (
             <View style={trajetbox.item} key={index}>
               <Text style={trajetbox.itemtitle}>
                 { trajet.gare_depart } vers { trajet.gare_arrive }
@@ -163,6 +165,11 @@ const styles = StyleSheet.create({
   comptepage : {
     paddingVertical: 50,
     paddingHorizontal: 15
+  },
+    errors: {
+    marginBottom: 5,
+    color: 'red',
+    textAlign: "left"
   },
   box : {
     width : 'auto' ,
