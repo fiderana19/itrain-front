@@ -1,38 +1,42 @@
 import Marginer from '@/components/personalized/Marginer';
 import { colorBlue } from '@/constants/Colors';
 import { page, stylesPerso, trajetbox } from '@/src/styles/GeneralStyles';
-import { StyleSheet, View, Text, Button, ScrollView, TextInput, Pressable, Modal, Alert } from 'react-native';
-import axios from 'axios'
-import React, { useState } from 'react';
+import { StyleSheet, View, Text, Button, ScrollView, TextInput, Pressable, Modal } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { Ionicons } from '@expo/vector-icons';
 import { Calendar } from 'react-native-calendars';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
+import useSearchTrajet from '@/hooks/api/useSearchTrajet';
+import { SearchTrajetType } from '@/types/trajet.type';
+import { SearchTrajetValidation } from '@/validation/trajet.validation';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Controller, useForm } from 'react-hook-form';
+import { ReservationPlacingType } from '@/types/reservation.type';
+import { useAuth } from '../../context/AuthContext';
+import usePostReservation from '@/hooks/api/usePostReservation';
+import useGetAllReservation from '@/hooks/api/useGetAllReservation';
+import { ReservationPlacingValidation } from '@/validation/reservation.validation';
 
 export default function SignupPageScreen() {
-  const [trajets , setTrajets] = useState([])
-  const [selectdepart, setSelectDepart] = useState("")
-  const [selectarrive, setSelectArrive] = useState("")
-  const [selectedDate , setSelectedDate] = useState(null);
+  const { token } = useAuth();
+  const { handleSubmit: submit, formState: { errors }, control, setValue } = useForm<SearchTrajetType>({
+    resolver: yupResolver(SearchTrajetValidation)
+  });
+  const { mutateAsync: search, data: trajets, reset } = useSearchTrajet();
   const [show, setShow] = useState(false);
-
-  const [edittrajet_id, setEditTrajetId] = useState("")
-  const [editnumero_train, setEditNumeroTrain] = useState("")
-  const [editclasse, setEditClasse] = useState("")
-  const [editgare_depart, setEditGareDepart] = useState("")
-  const [editgare_arrive, setEditGareArrive] = useState("")
-  const [editduree_trajet, setEditDuree] = useState("")
-  const [editheure_depart, setEditHeureDepart] = useState("")
-  const [editheure_arrive, setEditHeureArrive] = useState("")
-  const [editbillet, setEditBillet] = useState("")
-  const [editdispo, setEditDispo] = useState("")
-  const [edittrain_id, setEditTrain_id] = useState("")
-  const [editdate_trajet , setEditSelectedDate] = useState(null);
-  const [showpanier, setShowPanier] = useState(false)
-  const [noItem , setNoItem] = useState(false);
-
-  const [nbrplace, setNbrPlace] = useState("")
+  const [selectedTrajet, setSelectedTrajet] = useState<any>();
+  const [showpanier, setShowPanier] = useState(false);
+  const { handleSubmit: reserver, formState: { errors: reserver_errors}, control: reserver_control, setValue: setValueReserver } = useForm<ReservationPlacingType>({
+    resolver: yupResolver(ReservationPlacingValidation)
+  })
+  const { refetch } = useGetAllReservation();
+  const { mutateAsync: createReservation } = usePostReservation({action() {
+    refetch()
+  },})
+  useEffect(() => {
+    setValueReserver('utilisateur_id', token ? JSON.parse(atob(token?.split('.')[1])).id : '' )
+  }, [token])
 
   const ville: any = [
     {key: 'Antananarivo', value: "Antananarivo"},
@@ -42,54 +46,14 @@ export default function SignupPageScreen() {
     {key: 'Toamasina', value: "Toamasina"},
   ]
 
-  const submitReserver = async (e: any) => {
-    console.log(selectdepart , 'depart' , selectarrive , 'arrive', selectedDate )
-    const uid = await AsyncStorage.getItem('uid')
-    const curren = moment().format('YYYY-MM-DD')
-
-    console.log( curren, 'date', uid ,'id' , nbrplace , 'nb' , edittrajet_id, 'trajet')
-    if(nbrplace > editdispo) {
-      Alert.alert("Erreur", "Plus de places disponibles pour ces nombres de place !", [
-        {text: 'Ok' , onPress: ()=>{}}
-      ])
-    } else {
-      try {
-        const response  = await axios({
-          method: 'POST',
-          url: `http://192.168.43.184:3002/reservation/create`,
-          data: { date_reservation: curren , nbr_place: nbrplace , utilisateur_id: uid, trajet_id: edittrajet_id  }
-        })
-          console.log(response.data);
-          Alert.alert("Reservation", "Reservation réussie !", [
-            {text: "Ok" , onPress: ()=>{}}
-          ])      
-          setShowPanier(false)
-          searchTrajet()
-          setNoItem(true)
-      } catch (error) {
-        console.log(error)
-      }
-    }
+  const submitReserver = async (data: any) => {
+    await createReservation(data);
+    reset();
+    setShowPanier(false);
   }
 
-  const searchTrajet = async () => {
-    const token = await AsyncStorage.getItem('token')
-    console.log(selectdepart , 'depart' , selectarrive , 'arrive', selectedDate )
-
-    try {
-      const response  = await axios({
-        headers: {
-          Authorization: `Bearer ${ token }`
-        },
-        method: 'POST',
-        url: `http://192.168.43.184:3002/trajet/search`,
-        data: {depart: selectdepart, arrive: selectarrive, date: selectedDate }
-      })
-      console.log(response.data)
-        setTrajets(response.data)     
-    } catch (error) {
-      console.log(error)
-    }
+  const searchTrajet = async (data: SearchTrajetType) => {
+    await search(data);
   }
 
   const showCalendar = () => {
@@ -97,26 +61,16 @@ export default function SignupPageScreen() {
   }
 
   const handleDayPress = (day: any) => {    
-    setSelectedDate(day.dateString)
+    setValue('date', day.dateString)
 
     setShow(false)
   }
 
   const selectTrajet = async (item: any) => {
-    setEditTrajetId(item.trajet_id)
-    setEditGareDepart(item.gare_depart)
-    setEditGareArrive(item.gare_arrive)
-    setEditDuree(item.duree_trajet)
-    setEditHeureDepart(item.heure_depart)
-    setEditHeureArrive(item.heure_arrive)
-    setEditBillet(item.billet)
-    setEditTrain_id(item.train_id)
-    setEditClasse(item.classe)
-    setEditDispo(item.places_disponibles)
-    setEditNumeroTrain(item.numero_train)
-    setEditSelectedDate(item.date_trajet)
-
-    setShowPanier(true)
+    setSelectedTrajet(item);
+    setValueReserver('date_reservation', moment().format('YYYY-MM-DD'))
+    setValueReserver('trajet_id', item?.trajet_id);
+    setShowPanier(true);
   }
 
   const formater = (date: any) => {
@@ -133,48 +87,70 @@ export default function SignupPageScreen() {
           <Marginer value={15} />  
           <View>
             <Text>Gare de depart : </Text>
-            <SelectList 
-              data={ville}
-              setSelected={setSelectDepart}
-              searchPlaceholder='Saisir la ville'
-              placeholder='Gare de depart'
-              boxStyles={{borderRadius:5,paddingVertical:10}}
-             />
+            <Controller 
+              name="depart"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <SelectList 
+                  data={ville}
+                  setSelected={onChange}
+                  searchPlaceholder='Saisir la ville'
+                  placeholder='Gare de depart'
+                  boxStyles={{borderRadius:5,paddingVertical:10}}
+                />
+              )}
+            />
+            {errors.depart && <Text style={styles.errors}>{errors.depart.message}</Text>}
              <Marginer value={5} />
             <Text>Gare d'arrivé : </Text>
-            <SelectList 
-              data={ville}
-              setSelected={setSelectArrive}
-              searchPlaceholder="Saisir la ville"
-              placeholder="Gare d'arrivé"
-              boxStyles={{borderRadius:5,paddingVertical:10}}
-             />
+            <Controller 
+              name="arrive"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <SelectList 
+                  data={ville}
+                  setSelected={onChange}
+                  searchPlaceholder='Saisir la ville'
+                  placeholder='Gare de depart'
+                  boxStyles={{borderRadius:5,paddingVertical:10}}
+                />
+              )}
+            />
+            {errors.arrive && <Text style={styles.errors}>{errors.arrive.message}</Text>}
             <Marginer value={5} />
             <Text>Date : </Text>
             <View style={styles.calendarview}>
               <Ionicons  name='calendar' style={styles.calendaricon} onPress={showCalendar} /> 
-              <TextInput
-              style={styles.input}
-              value={(selectedDate) ? (selectedDate) : 'Selectionner une date'}
+              <Controller 
+                name="date"
+                control={control}
+                render={({ field: { value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    value={value}
+                    aria-disabled
+                  />
+                )}
               />
             </View>
             {show && (
             <Calendar
             onDayPress={handleDayPress}
-            style={stylesPerso.cal}
+            style={styles.cal}
             />
             )}
+            {errors.date && <Text style={styles.errors}>{errors.date.message}</Text>}
             <Button
             title="Rechercher"
-            onPress={searchTrajet}
+            onPress={submit(searchTrajet)}
             />
           </View>
           <Marginer value={50} />  
-          {noItem && trajets.length === 0 ? <View>
+          { trajets?.data?.length === 0 ? <View>
             <Ionicons style={styles.iconno} name='close' />
             <Text style={styles.textno}>Pas de trajets disponibles</Text>
           </View>: <></>}
-          { trajets && trajets.map((trajet: any, index) => (
+          { trajets && trajets?.data.map((trajet: any, index: any) => (
             <View style={trajetbox.item} key={index}>
               <Text style={trajetbox.itemtitle}>
                 { trajet.gare_depart } vers { trajet.gare_arrive }
@@ -220,50 +196,55 @@ export default function SignupPageScreen() {
               <Text style={trajetbox.itemdispo}>Reservation de billet(s)</Text>
               <View style={trajetbox.item}>
                 <Text style={trajetbox.itemtitle}>
-                  { editgare_depart } vers { editgare_arrive }
+                  { selectedTrajet?.gare_depart } vers { selectedTrajet?.gare_arrive }
                 </Text>
                 <Marginer value={10} />
                 <Text style={styles.trajetinfo}>
-                  { formater(editdate_trajet) }
+                  { formater(selectedTrajet?.date_trajet) }
                 </Text>
                 <View style={styles.flexy} >
-                    <Text style={trajetbox.itemheure}> { editheure_depart }</Text> 
-                    <Text style={trajetbox.itemduree}>-----   { editduree_trajet }  ----</Text>
-                    <Text style={trajetbox.itemheure}> { editheure_arrive }</Text>
+                    <Text style={trajetbox.itemheure}> { selectedTrajet?.heure_depart }</Text> 
+                    <Text style={trajetbox.itemduree}>-----   { selectedTrajet?.duree_trajet }  ----</Text>
+                    <Text style={trajetbox.itemheure}> { selectedTrajet?.heure_arrive }</Text>
                 </View>
                 <View style={styles.flexy}>
-                  <Text style={trajetbox.itemville}> { editgare_depart }</Text>
-                  <Text style={trajetbox.itemville}> { editgare_arrive }</Text>
+                  <Text style={trajetbox.itemville}> { selectedTrajet?.gare_depart }</Text>
+                  <Text style={trajetbox.itemville}> { selectedTrajet?.gare_arrive }</Text>
                 </View>
                 <Text style={trajetbox.itemtext}>
-                Train n°  { editnumero_train }
+                Train n°  { selectedTrajet?.numero_train }
               </Text>
               <Text style={trajetbox.itemtextt}>
-                Classe:   { editclasse }
+                Classe:   { selectedTrajet?.classe }
               </Text>
                 <Text style={trajetbox.itembillet}>
-                { editbillet } MGA
+                { selectedTrajet?.billet } MGA
                 </Text>
                 <Text style={trajetbox.itemdispo}>
                   <Ionicons name='person' style={trajetbox.dispoicon} />
-                  <Text>{editdispo} place(s) disponible(s)</Text>
+                  <Text>{selectedTrajet?.places_disponibles} place(s) disponible(s)</Text>
                 </Text>
                 <Marginer value={10} />
               </View>
               <Marginer value={10} />
               <Text>Nombre de place : </Text>
-              <TextInput
-              style={styles.input}
-              value={nbrplace}
-              onChangeText={(e : any)=>{
-                  setNbrPlace(e)
-              }} 
-              />     
-
-              <Pressable onPress={submitReserver}>
+              <Controller 
+                name='nbr_place'
+                control={reserver_control}
+                render={({
+                  field: { value, onChange }
+                }) => (
+                  <TextInput
+                    style={styles.input}
+                    value={value}
+                    onChangeText={onChange} 
+                  /> 
+                )}
+              />
+              {reserver_errors.nbr_place && <Text style={styles.errors}>{reserver_errors.nbr_place.message}</Text>}
+              <Pressable onPress={reserver(submitReserver)}>
                   <Text style={stylesPerso.btnSuccess}>Valider</Text>
               </Pressable>
-       
             </ScrollView>
           </Modal>
       </ScrollView>
@@ -271,6 +252,16 @@ export default function SignupPageScreen() {
 }
 
 const styles = StyleSheet.create({
+  errors: {
+    marginBottom: 5,
+    color: 'red',
+    textAlign: "left"
+  },
+  cal: {
+    borderColor: '#000',
+    borderWidth: 1,
+    marginBottom: 25
+  },
   comptepage : {
     paddingVertical: 50,
     paddingHorizontal: 15

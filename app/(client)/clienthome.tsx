@@ -39,7 +39,7 @@ export default function HomeScreen() {
             </Text>
             <Marginer value={20} />  
             <View style={home.btn}>
-              <Link href="/signedsearch" style={stylesPerso.btnPrimary}>
+              <Link href="/clientsearch" style={stylesPerso.btnPrimary}>
                 RESERVER
               </Link>
             </View>
