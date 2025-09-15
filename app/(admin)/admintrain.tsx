@@ -1,117 +1,57 @@
 import { colorBlue } from '@/constants/Colors';
 import { page, stylesPerso, trajetbox } from '@/src/styles/GeneralStyles';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, Modal, TextInput, Button, Pressable, Image, Alert } from 'react-native';
-import axios from 'axios';
 import Marginer from '@/components/personalized/Marginer';
+import useGetAllTrain from '@/hooks/api/useGetAllTrain';
+import { Controller, useForm } from 'react-hook-form';
+import { CreateTrainType, EditTrainType } from '@/types/train.type';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { CreateTrainValidation, EditTrainValidation } from '@/validation/train.validation';
+import usePostTrain from '@/hooks/api/usePostTrain';
+import useEditTrain from '@/hooks/api/useEditTrain';
+import useDeleteTrain from '@/hooks/api/useDeleteTrain';
 
 export default function HomeScreen() {
-  const [trains , setTrains] = useState([])
-  const [numero_train, setNumero] = useState("")
-  const [capacite, setCapacite] = useState("")
-  const [classe, setClasse] = useState("")
+  const { data: trains, isLoading, refetch } = useGetAllTrain();
+  const { mutateAsync: trainCreate } = usePostTrain({action() {
+    refetch();
+  },});
+  const { mutateAsync: trainEdit } = useEditTrain({action() {
+    refetch();
+  },});
+  const { mutateAsync: trainDelete } = useDeleteTrain({action() {
+    refetch();
+  },})
+  const { handleSubmit: submitCreate, formState: { errors: create_errors }, control: create_control } = useForm<CreateTrainType>({
+    resolver: yupResolver(CreateTrainValidation)
+  })
+  const { handleSubmit: submitEdit, formState: { errors: edit_errors }, control: edit_control, setValue: setEditValue, reset } = useForm<EditTrainType>({
+    resolver: yupResolver(EditTrainValidation)
+  })
+  const [selectedTrain, setSelectedTrain] = useState<EditTrainType>();
 
-  const [edittrain_id, setEditTrainId] = useState("")
-  const [editnumero_train, setEditNumero] = useState("")
-  const [editcapacite, setEditCapacite] = useState("")
-  const [editclasse, setEditClasse] = useState("")
-
-  const [addvisible , setAddVisible] = useState(false)
-  const [editvisible , setEditVisible] = useState(false)
+  const [addvisible , setAddVisible] = useState<boolean>(false)
+  const [editvisible , setEditVisible] = useState<boolean>(false)
   const Bg = '../../assets/photo/train.jpg';  
 
-  useEffect(() => {
-    fetchTrain()
-    verifyToken()
-  }, [])
-  const verifyToken = async () => {
-    const token = await AsyncStorage.getItem('token')
-
-    if(token === '') {
-      router.replace('/home')           
-    }
-  }
-  
-  const fetchTrain = async () => {
-    const token = await AsyncStorage.getItem('token')
-
-    try {
-      const response  = await axios({
-        headers: {
-          Authorization: `Bearer ${ token }`
-        },
-        method: 'GET',
-        url: `http://192.168.43.184:3002/train/`,
-      })
-        setTrains(response.data)  
-        console.log(response.data)   
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const submitForm = async (e: any) => {
-    const token = await AsyncStorage.getItem('token')
-
-    try {
-      const response  = await axios({
-        headers: {
-          Authorization: `Bearer ${ token }`
-        },
-        method: 'POST',
-        url: `http://192.168.43.184:3002/train/create/`,
-        data: { numero_train, capacite, classe }
-      })
-        console.log(response.data);  
-        setNumero("")
-        setCapacite("")
-        setClasse("")
-        fetchTrain()
-        setAddVisible(false)    
-        Alert.alert("Ajout", "Ajout réussie !", [
-          {text: "Ok" , onPress: ()=>{}}
-        ])          
-    } catch (error) {
-      console.log(error)
-    }
+  const createTrain = async (data: CreateTrainType) => {
+    await trainCreate(data);
+    setAddVisible(false);
   }
 
   const handleEdit = async (item: any) => {
-    setEditTrainId(item.train_id)
-    setEditNumero(item.numero_train)
-    setEditCapacite(item.capacite)
-    setEditClasse(item.classe)
-
-    console.log(editcapacite)
+    setSelectedTrain(item);
+    setEditValue('train_id', item?.train_id);
 
     setEditVisible(true)
   }
 
-  const submitEditForm = async (e: any) => {
-    const token = await AsyncStorage.getItem('token')
+  const editTrain = async (data: EditTrainType) => {
+    await trainEdit(data);
 
-    try {
-      const response  = await axios({
-        headers: {
-          Authorization: `Bearer ${ token }`
-        },
-        method: 'PATCH',
-        url: `http://192.168.43.184:3002/train/edit/${ edittrain_id }`,
-        data: { numero_train: editnumero_train, capacite: editcapacite, classe: editclasse }
-      })
-        console.log(response.data);
-        console.log(edittrain_id , editnumero_train);
-        fetchTrain() 
-        setEditVisible(false)  
-        Alert.alert("Modification", "Modification réussie !", [
-          {text: "Ok" , onPress: ()=>{}}
-        ])        
-    } catch (error) {
-      console.log(error)
-    }
+    setEditVisible(false);
   }
 
   const deleteHandler = async (train: any) => {
@@ -122,24 +62,7 @@ export default function HomeScreen() {
   }
 
   const handleDelete = async (train: any) => {
-    const token = await AsyncStorage.getItem('token')
-
-    try {
-      const response  = await axios({
-        headers: {
-          Authorization: `Bearer ${ token }`
-        },
-        method: 'DELETE',
-        url: `http://192.168.43.184:3002/train/delete/${ train }`,
-      })
-      fetchTrain()
-      console.log(response.data);
-      Alert.alert("Suppression", "Suppression réussie !", [
-        {text: "Ok" , onPress: ()=>{}}
-      ])          
-    } catch (error) {
-      console.log(error)
-    }
+    await trainDelete(train);
   }
 
   return (
@@ -159,7 +82,7 @@ export default function HomeScreen() {
             </View>
             <Marginer value={15} />
           </View>
-          { trains && trains.map((train: any, index) => (
+          { trains && trains.map((train: any, index: any) => (
           <View key={index} style={item.item}>
             <Image source={require(Bg)} style={item.bg} />
             <View style={item.descri}> 
@@ -197,37 +120,51 @@ export default function HomeScreen() {
             <Marginer value={5} />  
             <View>
               <Text>Numero du train : </Text>
-              <TextInput
-              style={styles.input}
-              value={numero_train}
-              onChangeText={(e : any)=>{
-                  setNumero(e)
-              }} 
+              <Controller 
+                name="numero_train"
+                control={create_control}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={stylesPerso.inputReal}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
               />
+              {create_errors.numero_train && <Text style={styles.errors}>{create_errors.numero_train.message}</Text>}
               <Text>Capacité : </Text>
-              <TextInput
-              style={styles.input}
-              value={capacite}
-              onChangeText={(e : any)=>{
-                  setCapacite(e)
-              }} 
+              <Controller 
+                name="capacite"
+                control={create_control}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={stylesPerso.inputReal}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
               />
+              {create_errors.capacite && <Text style={styles.errors}>{create_errors.capacite.message}</Text>}
               <Text>Classe : </Text>
-              <TextInput
-              style={styles.input}
-              value={classe}
-              onChangeText={(e : any)=>{
-                  setClasse(e)
-              }} 
+              <Controller 
+                name="classe"
+                control={create_control}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={stylesPerso.inputReal}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
               />
+              {create_errors.classe && <Text style={styles.errors}>{create_errors.classe.message}</Text>}
               <Button
               title="Ajouter"
-              onPress={submitForm}
+              onPress={submitCreate(createTrain)}
               />
             </View>
           </ScrollView>
         </Modal>
-
 
         {/* Modal de modification de train */}
         <Modal animationType='slide' visible={editvisible}>
@@ -239,36 +176,57 @@ export default function HomeScreen() {
               MODIFIER TRAIN 
             </Text>
             <Marginer value={5} />  
+            {
+              selectedTrain && 
             <View>
               <Text>Numero du train : </Text>
-              <TextInput
-              style={styles.input}
-              value={editnumero_train}
-              onChangeText={(e : any)=>{
-                  setEditNumero(e)
-              }} 
+              <Controller 
+                name="numero_train"
+                control={edit_control}
+                defaultValue={selectedTrain?.numero_train}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={stylesPerso.inputReal}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
               />
+              {edit_errors.numero_train && <Text style={styles.errors}>{edit_errors.numero_train.message}</Text>}
               <Text>Capacité : </Text>
-              <TextInput
-              style={styles.input}
-              value={editcapacite}
-              onChangeText={(e : any)=>{
-                  setEditCapacite(e)
-              }} 
+              <Controller 
+                name="capacite"
+                control={edit_control}
+                defaultValue={selectedTrain?.capacite}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={stylesPerso.inputReal}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
               />
+              {edit_errors.capacite && <Text style={styles.errors}>{edit_errors.capacite.message}</Text>}
               <Text>Classe : </Text>
-              <TextInput
-              style={styles.input}
-              value={editclasse}
-              onChangeText={(e : any)=>{
-                  setEditClasse(e)
-              }} 
+              <Controller 
+                name="classe"
+                control={edit_control}
+                defaultValue={selectedTrain?.classe}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={stylesPerso.inputReal}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
               />
+              {edit_errors.classe && <Text style={styles.errors}>{edit_errors.classe.message}</Text>}
               <Button
-              title="Modifier"
-              onPress={submitEditForm}
+                title="Modifier"
+                onPress={submitEdit(editTrain)}
               />
             </View>
+            }
           </ScrollView>
         </Modal>
       </ScrollView>
@@ -276,6 +234,11 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+    errors: {
+    marginBottom: 5,
+    color: 'red',
+    textAlign: "left"
+  },
   btn: {
     display: 'flex',
     flexDirection: 'row',
