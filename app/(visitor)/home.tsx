@@ -1,10 +1,8 @@
 import Marginer from '@/components/personalized/Marginer';
 import { colorBlue } from '@/constants/Colors';
 import { stylesPerso } from '@/src/styles/GeneralStyles';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link } from 'expo-router';
-import { useEffect } from 'react';
-import { StyleSheet, View , Text , ScrollView, ImageBackground } from 'react-native';
+import { View , Text , ScrollView, ImageBackground, StyleSheet } from 'react-native';
 
 export default function HomeScreen() {
   const Manakara = '../../assets/photo/manakara.jpg';
@@ -12,13 +10,6 @@ export default function HomeScreen() {
   const Antsirabe = '../../assets/photo/antsirabe.jpg';
   const Fianara = '../../assets/photo/fianara.jpg';
   const Bg = '../../assets/photo/soarano.jpg';  
-
-  useEffect(() => {
-    verifyToken()
-  }, [])
-  const verifyToken = async () => {
-    await AsyncStorage.setItem('token' , '')
-  }
 
   return (
       <ScrollView style={stylesPerso.container}>
@@ -135,12 +126,12 @@ const home = StyleSheet.create({
     fontWeight : 'bold',
   },
   discoverItem: {
-    borderRadius: 5,
-    borderWidth: 1,
-    width: 300,
-    objectFit: 'content',
-    height: '100%',
-    marginHorizontal: 3,
+    // borderRadius: 5,
+    // borderWidth: 1,
+    // width: 300,
+    // objectFit: 'content',
+    // height: '100%',
+    // marginHorizontal: 3,
   },
   home :{
     display: 'flex',
@@ -151,9 +142,9 @@ const home = StyleSheet.create({
     padding: 25
   },
   imgBg : {
-    width: '100%',
-    objectFit: 'content',
-    height: '100%',
+    // width: '100%',
+    // objectFit: 'content',
+    // height: '100%',
   },
   discoverText: {
     marginTop: 150,

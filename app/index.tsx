@@ -3,7 +3,7 @@ import { Link } from 'expo-router';
 import { stylesPerso } from "@/src/styles/GeneralStyles";
 import { colorBlue } from "@/constants/Colors";
 import Marginer from '../components/personalized/Marginer';
-import React, { useEffect } from "react";
+import React from "react";
 
 export default function WelcomeScreen() {
  const Bg = '../assets/photo/bg1.jpg';   
@@ -100,8 +100,8 @@ const myhome = StyleSheet.create({
     padding: 25
   },
   imgBg : {
-    width: '100%',
-    objectFit: 'content',
-    height: '100%',
+    // width: '100%',
+    // objectFit: 'content',
+    // height: '100%',
   },
 });
