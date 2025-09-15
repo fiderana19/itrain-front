@@ -98,6 +98,7 @@ export default function SignupPageScreen() {
                     style={styles.input}
                     value={value}
                     aria-disabled
+                    placeholder='Sectionner la date du trajet...'
                   />
                 )}
               />

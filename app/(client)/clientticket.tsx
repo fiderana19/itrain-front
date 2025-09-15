@@ -12,7 +12,7 @@ import useGetReservationByBillet from '@/hooks/api/useGetReservationByBillet';
 
 export default function HomeScreen() {
   const { token } = useAuth();
-  const { data: billets, isLoading, refetch } = useGetReservationByBillet(token ? JSON.parse(atob(token.split('.')[1])).id : '');
+  const { data: billets } = useGetReservationByBillet(token ? JSON.parse(atob(token.split('.')[1])).id : '');
 
   const generateTicket = async (data: any) => {
     const html = `

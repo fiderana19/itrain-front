@@ -23,7 +23,7 @@ export default function SignupPageScreen() {
   const { handleSubmit: submit, formState: { errors }, control, setValue } = useForm<SearchTrajetType>({
     resolver: yupResolver(SearchTrajetValidation)
   });
-  const { mutateAsync: search, data: trajets, reset } = useSearchTrajet();
+  const { mutateAsync: search, data: trajets, reset, isPending } = useSearchTrajet();
   const [show, setShow] = useState(false);
   const [selectedTrajet, setSelectedTrajet] = useState<any>();
   const [showpanier, setShowPanier] = useState(false);
@@ -129,6 +129,7 @@ export default function SignupPageScreen() {
                     style={styles.input}
                     value={value}
                     aria-disabled
+                    placeholder='Sectionner la date du trajet...'
                   />
                 )}
               />
@@ -146,6 +147,12 @@ export default function SignupPageScreen() {
             />
           </View>
           <Marginer value={50} />  
+          {
+          isPending && 
+          <View>
+            <Ionicons name='wifi-outline' style={styles.loading} />
+          </View>
+          }          
           { trajets?.data?.length === 0 ? <View>
             <Ionicons style={styles.iconno} name='close' />
             <Text style={styles.textno}>Pas de trajets disponibles</Text>
@@ -252,6 +259,11 @@ export default function SignupPageScreen() {
 }
 
 const styles = StyleSheet.create({
+  loading: {
+    fontSize: 55,
+    textAlign: 'center',
+    marginVertical: 25
+  },
   errors: {
     marginBottom: 5,
     color: 'red',

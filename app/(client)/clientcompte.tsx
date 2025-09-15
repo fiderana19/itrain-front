@@ -10,7 +10,7 @@ import useGetUserById from '@/hooks/api/useGetUserById';
 
 export default function HomeScreen() {
   const { token, logout } = useAuth();
-  const { data: user, isLoading, refetch } = useGetUserById(token ? JSON.parse(atob(token.split('.')[1])).id : '')
+  const { data: user, isLoading } = useGetUserById(token ? JSON.parse(atob(token.split('.')[1])).id : '')
   const Profile = '../../assets/photo/man-user-circle-icon.png';
 
   const handleLogout = async () => {
@@ -21,32 +21,45 @@ export default function HomeScreen() {
 
   return (
       <ScrollView style={stylesPerso.container}>
-        {
-          user && 
         <View style={page.paddingnormal}>
           <Marginer value={15} />
           <Text style={styles.userfont}> Les informations du compte </Text>
-          <Marginer value={15} />
-          <Image source={require(Profile)} style={styles.photo} /> 
-          <Marginer value={25} />
-          <Text> Nom :  </Text>
-          <Text style={styles.userfont}> { user[0].nom } </Text>
-          <Text> Telephone :  </Text>
-          <Text style={styles.userfont}> { user[0].telephone } </Text>
-          <Text> Adresse mail :  </Text>
-          <Text style={styles.userfont}> { user[0].email } </Text>
-          <Marginer value={30} />
-          <Pressable style={stylesPerso.btnPrimary} onPress={handleLogout} >
-            <Ionicons color={'#fff'} name='log-out' style={trajetbox.dispoicon} />
-            <Text style={{color: '#fff', marginLeft: 10}}>Se deconnecter</Text>
-          </Pressable>  
+          {
+          isLoading && 
+          <View>
+            <Ionicons name='wifi-outline' style={styles.loading} />
+          </View>
+          }
+          {
+            user && 
+            <View>
+              <Marginer value={15} />
+              <Image source={require(Profile)} style={styles.photo} /> 
+              <Marginer value={25} />
+              <Text> Nom :  </Text>
+              <Text style={styles.userfont}> { user[0].nom } </Text>
+              <Text> Telephone :  </Text>
+              <Text style={styles.userfont}> { user[0].telephone } </Text>
+              <Text> Adresse mail :  </Text>
+              <Text style={styles.userfont}> { user[0].email } </Text>
+              <Marginer value={30} />
+              <Pressable style={stylesPerso.btnPrimary} onPress={handleLogout} >
+                <Ionicons color={'#fff'} name='log-out' style={trajetbox.dispoicon} />
+                <Text style={{color: '#fff', marginLeft: 10}}>Se deconnecter</Text>
+              </Pressable> 
+            </View>
+          }
         </View>
-        }
       </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  loading: {
+    fontSize: 55,
+    textAlign: 'center',
+    marginVertical: 25
+  },
   comptepage : {
     padding: 50
   },
