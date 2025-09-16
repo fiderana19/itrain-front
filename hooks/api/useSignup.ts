@@ -1,11 +1,12 @@
 import { userSignup } from "@/api/user";
 import { TOAST_TYPE } from "@/constants/Toast_type";
+import { SignupUserType } from "@/types/user.type";
 import showToast from "@/utils/toast";
 import { useMutation } from "@tanstack/react-query";
 
 export default function useSignup ({action} : {action: () => void}) {
     const mutation = useMutation({
-        mutationFn: (data: any) => userSignup(data),
+        mutationFn: (data: SignupUserType) => userSignup(data),
         onSuccess: () => {
             if(action) {
                 action();

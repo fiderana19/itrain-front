@@ -1,6 +1,6 @@
 import { BASE_API_URL } from "@/env";
 import axiosAuthInstance, { axiosInstance } from "./Config";
-import { LoginUserType } from "@/types/user.type";
+import { LoginUserType, SignupUserType } from "@/types/user.type";
 
 const USER_API_URL = `${BASE_API_URL}/user`;
 
@@ -8,7 +8,7 @@ export const userLogin = async (data: LoginUserType) => {
     return await axiosInstance.post(`${USER_API_URL}/login`, data);
 }
 
-export const userSignup = async (data: any) => {
+export const userSignup = async (data: SignupUserType) => {
     return await axiosInstance.post(`${USER_API_URL}/signup`, data);
 }
 
