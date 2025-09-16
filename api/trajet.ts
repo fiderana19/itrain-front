@@ -1,5 +1,6 @@
 import { BASE_API_URL } from "@/env";
 import axiosAuthInstance, { axiosInstance } from "./Config";
+import { EditTrajetType } from "@/types/trajet.type";
 
 const TRAJET_API_URL = `${BASE_API_URL}/trajet`;
 
@@ -23,6 +24,6 @@ export const deleteTrajet = async (id: any) => {
     return await axiosAuthInstance.delete(`${TRAJET_API_URL}/delete/${id}`);
 }
 
-export const editTrajet = async (data: any) => {
-    return await axiosAuthInstance.patch(`${TRAJET_API_URL}/edit/${data.id}, data`);
+export const editTrajet = async (data: EditTrajetType) => {
+    return await axiosAuthInstance.patch(`${TRAJET_API_URL}/edit/${data?.trajet_id}`, data);
 }

@@ -1,63 +1,51 @@
 import Marginer from '@/components/personalized/Marginer';
 import { colorBlue } from '@/constants/Colors';
+import useDeleteTrajet from '@/hooks/api/useDeleteTrajet';
+import useEditTrajet from '@/hooks/api/useEditTrajet';
+import useGetAllTrajet from '@/hooks/api/useGetAllTrajet';
+import usePostTrajet from '@/hooks/api/usePostTrajet';
 import { page, stylesPerso, trajetbox } from '@/src/styles/GeneralStyles';
+import { CreateTrajetType, EditTrajetType } from '@/types/trajet.type';
+import { CreateTrajetValidation, EditTrajetValidation } from '@/validation/trajet.validation';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { router } from 'expo-router';
+import { yupResolver } from '@hookform/resolvers/yup';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { Button, StyleSheet, View, Text, ScrollView, Modal, TextInput, Pressable, Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
 export default function HomeScreen() {
-  const [trajets , setTrajets] = useState([])
-  const [gare_depart, setGareDepart] = useState("")
-  const [gare_arrive, setGareArrive] = useState("")
-  const [duree_trajet, setDuree] = useState("")
-  const [heure_depart, setHeureDepart] = useState("")
-  const [heure_arrive, setHeureArrive] = useState("")
-  const [billet, setBillet] = useState("")
-  const [train_id, setTrain_id] = useState("")
-  const [date_trajet , setSelectedDate] = useState(null);
+  const { data: trajets, refetch } = useGetAllTrajet();
+  const { handleSubmit: submitCreate, formState: { errors: create_errors }, control: create_control, setValue: setCreateValue, reset: createReset } = useForm<CreateTrajetType>({
+    resolver: yupResolver(CreateTrajetValidation)
+  })
+  const { handleSubmit: submitEdit, formState: { errors: edit_errors }, control: edit_control, setValue: setEditValue, reset: editReset } = useForm<EditTrajetType>({
+    resolver: yupResolver(EditTrajetValidation)
+  })
+  const { mutateAsync: postTrajet } = usePostTrajet({action() {
+    refetch()
+  },})
+  const { mutateAsync: editTrajet } = useEditTrajet({action() {
+    refetch()
+  },});  
+  const { mutateAsync: deleteTrajet } = useDeleteTrajet({action() {
+    refetch()
+  },});  
   const [show, setShow] = useState(false);
   const [editshow, setEditShow] = useState(false);
-  const dt = moment()
-
-  const [edittrajet_id, setEditTrajetId] = useState("")
-  const [editgare_depart, setEditGareDepart] = useState("")
-  const [editgare_arrive, setEditGareArrive] = useState("")
-  const [editduree_trajet, setEditDuree] = useState("")
-  const [editheure_depart, setEditHeureDepart] = useState("")
-  const [editheure_arrive, setEditHeureArrive] = useState("")
-  const [editbillet, setEditBillet] = useState("")
-  const [edittrain_id, setEditTrain_id] = useState("")
-  const [editdate_trajet , setEditSelectedDate] = useState(null);
-
+  const [selectedTrajet, setSelectedTrajet] = useState<EditTrajetType | null>(null);
   const [addvisible , setAddVisible] = useState(false)
   const [editvisible , setEditVisible] = useState(false)
-
-  useEffect(() => {
-    fetchTrajets()
-
-    verifyToken()
-  }, [])
-  const verifyToken = async () => {
-    const token = await AsyncStorage.getItem('token')
-
-    if(token === '') {
-      router.replace('/home')           
-    }
-  }
 
   const showCalendar = () => {
     setShow(true)
   }
 
   const handleDayPress = (day: any) => {    
-    setSelectedDate(day.dateString)
+    setCreateValue('date_trajet', day.dateString)
 
-    setShow(false)
+    setShow(false);
   }
 
   const showEditCalendar = () => {
@@ -65,130 +53,36 @@ export default function HomeScreen() {
   }
 
   const handleEditDayPress = (day: any) => {    
-    setEditSelectedDate(day.dateString)
+    setEditValue('date_trajet', day.dateString)
 
-    setEditShow(false)
-  }
-  
-  const fetchTrajets = async () => {
-    const token = await AsyncStorage.getItem('token')
-
-    try {
-      const response  = await axios({
-        headers: {
-          Authorization: `Bearer ${ token }`
-        },
-        method: 'GET',
-        url: `http://192.168.43.184:3002/trajet/`,
-      })
-      console.log(response.data)
-        setTrajets(response.data)     
-    } catch (error) {
-      console.log(error)
-    }
+    setEditShow(false);
   }
 
-  const submitForm = async (e: any) => {
-    const token = await AsyncStorage.getItem('token')
-    console.log(date_trajet)
-
-    if(train_id !== '' ) {
-      try {
-        const response  = await axios({
-          headers: {
-            Authorization: `Bearer ${ token }`
-          },
-          method: 'POST',
-          url: `http://192.168.43.184:3002/trajet/create/`,
-          data: { date_trajet, gare_depart, gare_arrive, duree_trajet, heure_depart, heure_arrive, billet, train_id }
-        })
-          console.log(response.data);  
-          setGareDepart("")  
-          setGareArrive("")  
-          setDuree("")
-          setHeureDepart("")
-          setHeureArrive("")
-          setBillet("")
-          setTrain_id("") 
-          setSelectedDate(null)   
-          fetchTrajets()
-          setAddVisible(false)    
-          Alert.alert("Ajout", "Ajout réussie !", [
-            {text: "Ok" , onPress: ()=>{}}
-          ])              
-      } catch (error) {
-        console.log(error)
-      }  
-    } else {
-      console.log('erreur')
-    }
-
+  const handleCreate = async (data: CreateTrajetType) => {    
+    await postTrajet(data);
+    createReset();
+    setAddVisible(false);
   }
 
-  const submitEditForm = async (e: any) => {
-    const token = await AsyncStorage.getItem('token')
-    console.log(edittrajet_id,{ date_trajet: editdate_trajet, gare_depart: editgare_depart, gare_arrive: editgare_arrive, duree_trajet: editduree_trajet, heure_depart: editheure_depart, heure_arrive: editheure_arrive, billet: editbillet, train_id: edittrain_id })
-
-      try {
-        const response  = await axios({
-          headers: {
-            Authorization: `Bearer ${ token }`
-          },
-          method: 'PATCH',
-          url: `http://192.168.43.184:3002/trajet/edit/${ edittrajet_id }`,
-          data: { date_trajet: editdate_trajet, gare_depart: editgare_depart, gare_arrive: editgare_arrive, duree_trajet: editduree_trajet, heure_depart: editheure_depart, heure_arrive: editheure_arrive, billet: editbillet, train_id: edittrain_id }
-        })
-          console.log(response.data);  
-          fetchTrajets()
-          setEditVisible(false)     
-          Alert.alert("Modification", "Modification réussie !", [
-            {text: "Ok" , onPress: ()=>{}}
-          ])           
-      } catch (error) {
-        console.log(error)
-      }  
-
+  const handleEditSubmit = async (data: EditTrajetType) => {  
+    await editTrajet(data);
+    editReset();
+    setSelectedTrajet(null);
+    setEditVisible(false);
   }
 
-  const handleEdit = async (item: any) => {
-    setEditTrajetId(item.trajet_id)
-    setEditGareDepart(item.gare_depart)
-    setEditGareArrive(item.gare_arrive)
-    setEditDuree(item.duree_trajet)
-    setEditHeureDepart(item.heure_depart)
-    setEditHeureArrive(item.heure_arrive)
-    setEditBillet(item.billet)
-    setEditTrain_id(item.train_id)
-    setEditSelectedDate(item.date_trajet)
+  const handleEdit = async (item: EditTrajetType) => {
+    setSelectedTrajet(item);
+    setEditValue('trajet_id', item?.trajet_id)
 
     setEditVisible(true)
   }
 
   const deleteHandler = async (trajet: any) => {
     Alert.alert("Suppression", "Voulez-vous vraiment supprimer ce train ?", [
-      {text: "Oui", onPress: ()=>handleDelete(trajet)},
+      {text: "Oui", onPress: ()=> {deleteTrajet(trajet)}},
       {text: "Non" , onPress: ()=>{}}
     ])
-  }
-
-  const handleDelete = async (trajet: any) => {
-    const token = await AsyncStorage.getItem('token')
-
-    try {
-      const response  = await axios({
-        headers: {
-          Authorization: `Bearer ${ token }`
-        },
-        method: 'DELETE',
-        url: `http://192.168.43.184:3002/trajet/delete/${ trajet }`,
-      })
-      console.log(response.data);
-      Alert.alert("Suppression", "Supression réussie !", [
-        {text: "Ok" , onPress: ()=>{}}
-      ])          
-    } catch (error) {
-      console.log(error)
-    }
   }
 
   const formater = (date: any) => {
@@ -212,7 +106,7 @@ export default function HomeScreen() {
             </View>
             <Marginer value={15} />
           </View>
-          { trajets && trajets.map((trajet: any, index) => (
+          { trajets && trajets.map((trajet: any, index: any) => (
             <View style={trajetbox.item} key={index}>
               <Text style={trajetbox.itemtitle}>
                 { trajet.gare_depart } vers  { trajet.gare_arrive }
@@ -268,77 +162,120 @@ export default function HomeScreen() {
             <Text>Date du trajet : </Text>
             <View style={styles.calendarview}>
               <Ionicons  name='calendar' style={styles.calendaricon} onPress={showCalendar} /> 
-              <TextInput
-              style={styles.input}
-              value={(date_trajet) ? (date_trajet) : 'Selectionner une date'}
-              />
+              <Controller 
+                name="date_trajet"
+                control={create_control}
+                render={({ field: { value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    value={value}
+                    placeholder='Selectionner la date du trajet...'
+                    aria-disabled
+                  />
+                )}
+              />             
             </View>
             {show && (
             <Calendar
-            onDayPress={handleDayPress}
-            style={stylesPerso.cal}
+              onDayPress={handleDayPress}
+              style={stylesPerso.cal}
             />
             )}
+            {create_errors?.date_trajet && <Text style={styles.errors}>{create_errors?.date_trajet.message}</Text>}
             <Text>Gare de depart : </Text>
-            <TextInput
-            style={styles.input}
-            value={gare_depart}
-            onChangeText={(e : any)=>{
-                setGareDepart(e)
-            }} 
-            />
+            <Controller 
+              name="gare_depart"
+              control={create_control}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />      
+            {create_errors?.gare_depart && <Text style={styles.errors}>{create_errors?.gare_depart.message}</Text>}
             <Text>Gare d'arrivé : </Text>
-            <TextInput
-            style={styles.input}
-            value={gare_arrive}
-            onChangeText={(e : any)=>{
-                setGareArrive(e)
-            }} 
-            />
+            <Controller 
+              name="gare_arrive"
+              control={create_control}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />  
+            {create_errors?.gare_arrive && <Text style={styles.errors}>{create_errors?.gare_arrive.message}</Text>}
             <Text>Durée du trajet : </Text>
-            <TextInput
-            style={styles.input}
-            value={duree_trajet}
-            onChangeText={(e : any)=>{
-                setDuree(e)
-            }} 
-            />
+            <Controller 
+              name="duree_trajet"
+              control={create_control}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />  
+            {create_errors?.duree_trajet && <Text style={styles.errors}>{create_errors?.duree_trajet.message}</Text>}
             <Text>Heure de depart : </Text>
-            <TextInput
-            style={styles.input}
-            value={heure_depart}
-            onChangeText={(e : any)=>{
-                setHeureDepart(e)
-            }} 
-            />
+            <Controller 
+              name="heure_depart"
+              control={create_control}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />  
+            {create_errors?.heure_depart && <Text style={styles.errors}>{create_errors?.heure_depart.message}</Text>}
             <Text>Heure d'arrivé : </Text>
-            <TextInput
-            style={styles.input}
-            value={heure_arrive}
-            onChangeText={(e : any)=>{
-                setHeureArrive(e)
-            }} 
-            />
+            <Controller 
+              name="heure_arrive"
+              control={create_control}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />  
+            {create_errors?.heure_arrive && <Text style={styles.errors}>{create_errors?.heure_arrive.message}</Text>}
             <Text>Billet : </Text>
-            <TextInput
-            style={styles.input}
-            value={billet}
-            onChangeText={(e : any)=>{
-                setBillet(e)
-            }} 
-            />
+            <Controller 
+              name="billet"
+              control={create_control}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />              
+            {create_errors?.billet && <Text style={styles.errors}>{create_errors?.billet.message}</Text>}
             <Text>Train : </Text>
-            <TextInput
-            style={styles.input}
-            value={train_id}
-            onChangeText={(e : any)=>{
-                setTrain_id(e)
-            }} 
-            />
-
+            <Controller 
+              name="train_id"
+              control={create_control}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />  
+            {create_errors?.train_id && <Text style={styles.errors}>{create_errors?.train_id.message}</Text>}
             <Button
             title="Ajouter"
-            onPress={submitForm}
+            onPress={submitCreate(handleCreate)}
             />
           </View>
         </ScrollView>
@@ -354,86 +291,139 @@ export default function HomeScreen() {
             MODIFIER TRAJET
           </Text>
           <Marginer value={5} />  
-          <View>
-            <Text>Date du trajet : </Text>
-            <View style={styles.calendarview}>
-              <Ionicons  name='calendar' style={styles.calendaricon} onPress={showEditCalendar} /> 
-              <TextInput
-              style={styles.input}
-              value={(editdate_trajet) ? (editdate_trajet) : 'Selectionner une date'}
+          {
+            selectedTrajet &&
+            <View>
+              <Text>Date du trajet : </Text>
+              <View style={styles.calendarview}>
+                <Ionicons  name='calendar' style={styles.calendaricon} onPress={showEditCalendar} /> 
+                <Controller 
+                  name="date_trajet"
+                  defaultValue={formater(selectedTrajet?.date_trajet)}
+                  control={edit_control}
+                  render={({ field: { value } }) => (
+                    <TextInput
+                      style={styles.input}
+                      value={value}
+                      placeholder='Selectionner la date du trajet...'
+                      aria-disabled
+                    />
+                  )}
+                />             
+              </View>
+              {editshow && (
+              <Calendar
+                onDayPress={handleEditDayPress}
+                style={stylesPerso.cal}
+              />
+              )}
+              {edit_errors?.date_trajet && <Text style={styles.errors}>{edit_errors?.date_trajet.message}</Text>}
+              <Text>Gare de depart : </Text>
+              <Controller 
+                name="gare_depart"
+                control={edit_control}
+                defaultValue={selectedTrajet?.gare_depart}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
+              />      
+              {edit_errors?.gare_depart && <Text style={styles.errors}>{edit_errors?.gare_depart.message}</Text>}
+              <Text>Gare d'arrivé : </Text>
+              <Controller 
+                name="gare_arrive"
+                control={edit_control}
+                defaultValue={selectedTrajet?.gare_arrive}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
+              />  
+              {edit_errors?.gare_arrive && <Text style={styles.errors}>{edit_errors?.gare_arrive.message}</Text>}
+              <Text>Durée du trajet : </Text>
+              <Controller 
+                name="duree_trajet"
+                control={edit_control}
+                defaultValue={selectedTrajet?.duree_trajet}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
+              />  
+              {edit_errors?.duree_trajet && <Text style={styles.errors}>{edit_errors?.duree_trajet.message}</Text>}
+              <Text>Heure de depart : </Text>
+              <Controller 
+                name="heure_depart"
+                control={edit_control}
+                defaultValue={selectedTrajet?.heure_depart}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
+              />  
+              {edit_errors?.heure_depart && <Text style={styles.errors}>{edit_errors?.heure_depart.message}</Text>}
+              <Text>Heure d'arrivé : </Text>
+              <Controller 
+                name="heure_arrive"
+                control={edit_control}
+                defaultValue={selectedTrajet?.heure_arrive}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
+              />  
+              {edit_errors?.heure_arrive && <Text style={styles.errors}>{edit_errors?.heure_arrive.message}</Text>}
+              <Text>Billet : </Text>
+              <Controller 
+                name="billet"
+                control={edit_control}
+                defaultValue={selectedTrajet?.billet}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
+              />              
+              {edit_errors?.billet && <Text style={styles.errors}>{edit_errors?.billet.message}</Text>}
+              <Text>Train : </Text>
+              <Controller 
+                name="train_id"
+                control={edit_control}
+                defaultValue={selectedTrajet?.train_id}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
+              />  
+              {edit_errors?.train_id && <Text style={styles.errors}>{edit_errors?.train_id.message}</Text>}
+              <Button
+                title="Modifier"
+                onPress={submitEdit(handleEditSubmit)}
               />
             </View>
-            {editshow && (
-            <Calendar
-            onDayPress={handleEditDayPress}
-            style={stylesPerso.cal}
-            />
-            )}
-            <Text>Gare de depart : </Text>
-            <TextInput
-            style={styles.input}
-            value={editgare_depart}
-            onChangeText={(e : any)=>{
-                setEditGareDepart(e)
-            }} 
-            />
-            <Text>Gare d'arrivé : </Text>
-            <TextInput
-            style={styles.input}
-            value={editgare_arrive}
-            onChangeText={(e : any)=>{
-                setEditGareArrive(e)
-            }} 
-            />
-            <Text>Durée du trajet : </Text>
-            <TextInput
-            style={styles.input}
-            value={editduree_trajet}
-            onChangeText={(e : any)=>{
-                setEditDuree(e)
-            }} 
-            />
-            <Text>Heure de depart : </Text>
-            <TextInput
-            style={styles.input}
-            value={editheure_depart}
-            onChangeText={(e : any)=>{
-                setEditHeureDepart(e)
-            }} 
-            />
-            <Text>Heure d'arrivé : </Text>
-            <TextInput
-            style={styles.input}
-            value={editheure_arrive}
-            onChangeText={(e : any)=>{
-                setEditHeureArrive(e)
-            }} 
-            />
-            <Text>Billet : </Text>
-            <TextInput
-            style={styles.input}
-            value={editbillet}
-            onChangeText={(e : any)=>{
-                setEditBillet(e)
-            }} 
-            />
-            <Text>Train : </Text>
-            <TextInput
-            style={styles.input}
-            value={edittrain_id}
-            onChangeText={(e : any)=>{
-                setEditTrain_id(e)
-            }} 
-            />
-
-            <Button
-            title="Modifier"
-            onPress={submitEditForm}
-            />
-          </View>
+          }
         </ScrollView>
         </Modal>
-
       </ScrollView>
   );
 }
@@ -547,5 +537,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end'
   },
-
+  errors: {
+    marginBottom: 5,
+    color: 'red',
+    textAlign: "left"
+  }
 });
