@@ -46,7 +46,7 @@ export default function SignupPageScreen() {
     {key: 'Toamasina', value: "Toamasina"},
   ]
 
-  const submitReserver = async (data: any) => {
+  const submitReserver = async (data: ReservationPlacingType) => {
     await createReservation(data);
     reset();
     setShowPanier(false);

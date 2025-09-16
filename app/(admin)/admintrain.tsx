@@ -30,7 +30,7 @@ export default function HomeScreen() {
   const { handleSubmit: submitEdit, formState: { errors: edit_errors }, control: edit_control, setValue: setEditValue, reset } = useForm<EditTrainType>({
     resolver: yupResolver(EditTrainValidation)
   })
-  const [selectedTrain, setSelectedTrain] = useState<EditTrainType>();
+  const [selectedTrain, setSelectedTrain] = useState<EditTrainType | null>(null);
 
   const [addvisible , setAddVisible] = useState<boolean>(false)
   const [editvisible , setEditVisible] = useState<boolean>(false)
@@ -41,7 +41,7 @@ export default function HomeScreen() {
     setAddVisible(false);
   }
 
-  const handleEdit = async (item: any) => {
+  const handleEdit = async (item: EditTrainType) => {
     setSelectedTrain(item);
     setEditValue('train_id', item?.train_id);
 
@@ -54,14 +54,14 @@ export default function HomeScreen() {
     setEditVisible(false);
   }
 
-  const deleteHandler = async (train: any) => {
+  const deleteHandler = async (train: string) => {
     Alert.alert("Suppression", "Voulez-vous vraiment supprimer ce train ?", [
       {text: "Oui", onPress: ()=>handleDelete(train)},
       {text: "Non" , onPress: ()=>{}}
     ])
   }
 
-  const handleDelete = async (train: any) => {
+  const handleDelete = async (train: string) => {
     await trainDelete(train);
   }
 

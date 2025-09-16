@@ -8,7 +8,7 @@ export const getAllTrain = async () => {
     return await axiosAuthInstance.get(`${TRAIN_API_URL}/all`);
 }
 
-export const getTrainById = async (id: any) => {
+export const getTrainById = async (id: string) => {
     return await axiosAuthInstance.get(`${TRAIN_API_URL}/get/${id}`);
 }
 
@@ -16,7 +16,7 @@ export const postTrain = async (data: CreateTrainType) => {
     return await axiosAuthInstance.post(`${TRAIN_API_URL}/create`, data);
 }
 
-export const deleteTrain = async (id: any) => {
+export const deleteTrain = async (id: string) => {
     return await axiosAuthInstance.delete(`${TRAIN_API_URL}/delete/${id}`);
 }
 

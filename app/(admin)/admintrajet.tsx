@@ -78,14 +78,14 @@ export default function HomeScreen() {
     setEditVisible(true)
   }
 
-  const deleteHandler = async (trajet: any) => {
+  const deleteHandler = async (trajet: string) => {
     Alert.alert("Suppression", "Voulez-vous vraiment supprimer ce train ?", [
       {text: "Oui", onPress: ()=> {deleteTrajet(trajet)}},
       {text: "Non" , onPress: ()=>{}}
     ])
   }
 
-  const formater = (date: any) => {
+  const formater = (date: string) => {
     return moment(date).format('YYYY-MM-DD')
   }
 
