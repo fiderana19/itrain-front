@@ -3,8 +3,12 @@ import { colorBlue } from '@/constants/Colors';
 import { stylesPerso } from '@/src/styles/GeneralStyles';
 import { Link } from 'expo-router';
 import { StyleSheet, View, Text, ScrollView, ImageBackground } from 'react-native';
+import { useAuth } from '../../context/AuthContext';
+import useGetUserById from '@/hooks/api/useGetUserById';
 
 export default function HomeScreen() {
+  const { token } = useAuth();
+  const { data: user } = useGetUserById(token ? JSON.parse(atob(token.split('.')[1])).id : '')
   const Manakara = '../../assets/photo/manakara.jpg';
   const Tana = '../../assets/photo/tana.jpg';
   const Antsirabe = '../../assets/photo/antsirabe.jpg';
@@ -17,8 +21,15 @@ export default function HomeScreen() {
       <ScrollView style={home.acc}>
         <ImageBackground source={require(Bg)} style={home.imgBg}>
           <View style={home.home}>
+            {
+              user &&
+              <Text style={home.title}>
+                Bienvenue, {user[0].nom} !
+              </Text>
+            }
+            <Marginer value={50} />  
             <Text style={home.title}>
-              Je reserve mon billet de train à Madagascar
+              Plateforme de reservation de billet de train à Madagascar
             </Text>
             <Text style={home.resrvationtitle}>
               Reserver en ligne votre ticket dès maintenant 

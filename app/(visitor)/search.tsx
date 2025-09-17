@@ -225,7 +225,6 @@ const styles = StyleSheet.create({
   },
   calendarview: {
     position: 'relative',
-
   },
   calendaricon: {
     position: 'absolute',

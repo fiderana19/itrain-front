@@ -1,26 +1,27 @@
 import { useMutation } from "@tanstack/react-query";
 import showToast from "@/utils/toast";
 import { TOAST_TYPE } from "@/constants/Toast_type";
-import { deleteTrain } from "@/api/train";
+import { postVille } from "@/api/ville";
+import { CreateVilleType } from "@/types/ville.type";
 
-export default function useDeleteTrain ({action} : {action: () => void}) {
+export default function usePostVille ({action} : {action: () => void}) {
     const mutation = useMutation({
-        mutationFn: (id: any) => deleteTrain(id),
+        mutationFn: (data: CreateVilleType) => postVille(data),
         onSuccess: () => {
             if(action) {
                 action();
             }
             showToast({
                 type: TOAST_TYPE.SUCCESS,
-                title: "Suppression d'un train",
-                message: "Train supprimé !"
+                title: "Nouvelle ville",
+                message: "Nouvelle ville ajoutée !"
             })
         },
         onError: () => {
             showToast({
                 type: TOAST_TYPE.ERROR,
-                title: "Suppression d'un train",
-                message: "Erreur lors de la suppression du train !"
+                title: "Nouvelle ville",
+                message: "Erreur lors de l'ajout de la nouvelle ville !"
             })
         }
     })

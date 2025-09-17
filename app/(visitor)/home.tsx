@@ -10,14 +10,14 @@ export default function HomeScreen() {
   const Antsirabe = '../../assets/photo/antsirabe.jpg';
   const Fianara = '../../assets/photo/fianara.jpg';
   const Bg = '../../assets/photo/soarano.jpg';  
-
+  
   return (
       <ScrollView style={stylesPerso.container}>
         <View>
           <ScrollView style={home.acc}>
             <ImageBackground source={require(Bg)} style={home.imgBg}>
               <View style={home.home}>
-                <Text style={home.title}>
+                  <Text style={home.title}>
                   Je reserve mon billet de train à Madagascar
                 </Text>
                 <Text style={home.resrvationtitle}>

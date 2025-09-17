@@ -3,12 +3,12 @@ import { QUERYCACHEKEY } from "./QueryCacheKey";
 import { useEffect } from "react";
 import showToast from "@/utils/toast";
 import { TOAST_TYPE } from "@/constants/Toast_type";
-import { getTrainById } from "@/api/train";
+import { getAllVille } from "@/api/ville";
 
-export default function useGetTrainById (id: any) {
+export default function useGetAllVille () {
     const { data, isLoading, isError, error, refetch } = useQuery({
-        queryKey: [QUERYCACHEKEY.TRAINS, id],
-        queryFn: () => getTrainById(id),
+        queryKey: [QUERYCACHEKEY.VILLES],
+        queryFn: () => getAllVille(),
         staleTime: Infinity
     })
 
@@ -17,7 +17,7 @@ export default function useGetTrainById (id: any) {
             showToast({
                 type: TOAST_TYPE.ERROR,
                 title: "Erreur",
-                message: "Erreur lors de la recuperation du train !"
+                message: "Erreur lors de la recuperation des villes !"
             })
         }
     }, [error])

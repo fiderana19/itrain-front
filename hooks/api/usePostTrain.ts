@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
-import { postTrain } from "@/api/train";
 import showToast from "@/utils/toast";
 import { TOAST_TYPE } from "@/constants/Toast_type";
+import { postTrain } from "@/api/train";
 
 export default function usePostTrain ({action} : {action: () => void}) {
     const mutation = useMutation({

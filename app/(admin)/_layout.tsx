@@ -50,6 +50,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="adminville"
+        options={{
+          title: '',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'location' : 'location-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="admincompte"
         options={{
           title: '',

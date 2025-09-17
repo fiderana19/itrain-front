@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { QUERYCACHEKEY } from "./QueryCacheKey";
-import { getAllTrain } from "@/api/train";
 import { useEffect } from "react";
 import showToast from "@/utils/toast";
 import { TOAST_TYPE } from "@/constants/Toast_type";
+import { getAllTrain } from "@/api/train";
 
 export default function useGetAllTrain () {
     const { data, isLoading, isError, error, refetch } = useQuery({

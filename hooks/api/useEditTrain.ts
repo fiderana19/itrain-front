@@ -1,11 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
-import { editTrain } from "@/api/train";
 import showToast from "@/utils/toast";
 import { TOAST_TYPE } from "@/constants/Toast_type";
+import { editTrain } from "@/api/train";
+import { EditTrainType } from "@/types/train.type";
 
 export default function useEditTrain ({action} : {action: () => void}) {
     const mutation = useMutation({
-        mutationFn: (data: any) => editTrain(data),
+        mutationFn: (data: EditTrainType) => editTrain(data),
         onSuccess: () => {
             if(action) {
                 action();

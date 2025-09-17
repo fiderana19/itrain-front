@@ -188,3 +188,42 @@ export const trajetbox = StyleSheet.create({
         flexDirection: 'row'
     },
 });
+
+export const personalized = StyleSheet.create({
+    errors_text: {
+        marginBottom: 5,
+        color: 'red',
+        textAlign: "left"
+    },
+    input: {
+        borderWidth: 2,
+        borderColor: 'grey',
+        minWidth: 200,
+        textAlignVertical: 'center',
+        paddingLeft: 10,
+        padding: 8,
+        borderRadius: 5,
+        marginBottom: 7,
+        color: "black"
+    },
+    input_errors: {
+        borderWidth: 2,
+        borderColor: 'red',
+        minWidth: 200,
+        textAlignVertical: 'center',
+        paddingLeft: 10,
+        padding: 8,
+        borderRadius: 5,
+        marginBottom: 7,
+        color: "red"
+    },
+    select_box: {
+        borderRadius:5,
+        paddingVertical:10
+    },
+    calendar: {
+        borderColor: '#000',
+        borderWidth: 1,
+        marginBottom: 25
+    },
+});
