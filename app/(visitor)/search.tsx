@@ -2,7 +2,7 @@ import Marginer from '@/components/personalized/Marginer';
 import { colorBlue } from '@/constants/Colors';
 import { page, stylesPerso, trajetbox } from '@/src/styles/GeneralStyles';
 import { StyleSheet, View , Text , Button , ScrollView , TextInput } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Calendar } from 'react-native-calendars';
 import { Link } from 'expo-router';
@@ -13,20 +13,15 @@ import { SearchTrajetType } from '@/types/trajet.type';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { SearchTrajetValidation } from '@/validation/trajet.validation';
 import useSearchTrajet from '@/hooks/api/useSearchTrajet';
+import useGetAllVille from '@/hooks/api/useGetAllVille';
 
 export default function SignupPageScreen() {
   const { handleSubmit: submit, formState: { errors }, control, setValue } = useForm<SearchTrajetType>({
     resolver: yupResolver(SearchTrajetValidation)
   });
   const { mutateAsync: search, data: trajets } = useSearchTrajet();
+  const { data: villes, data2search } = useGetAllVille();
   const [show, setShow] = useState(false);
-  const ville: any = [
-    {key: 'Antananarivo', value: "Antananarivo"},
-    {key: 'Antsirabe', value: "Antsirabe"},
-    {key: 'Fianarantsoa', value: "Fianarantsoa"},
-    {key: 'Manakara', value: "Manakara"},
-    {key: 'Toamasina', value: "Toamasina"},
-  ]
 
   const searchTrajet = async (data: SearchTrajetType) => {
     await search(data);
@@ -61,7 +56,7 @@ export default function SignupPageScreen() {
               control={control}
               render={({ field: { onChange, value } }) => (
                 <SelectList 
-                  data={ville}
+                  data={data2search}
                   setSelected={onChange}
                   searchPlaceholder='Saisir la ville'
                   placeholder='Gare de depart'
@@ -77,7 +72,7 @@ export default function SignupPageScreen() {
               control={control}
               render={({ field: { onChange, value } }) => (
                 <SelectList 
-                  data={ville}
+                  data={data2search}
                   setSelected={onChange}
                   searchPlaceholder='Saisir la ville'
                   placeholder='Gare de depart'
