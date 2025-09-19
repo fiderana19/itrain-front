@@ -107,7 +107,7 @@ export default function HomeScreen() {
                 { trajet.billet } MGA
               </Text>
               <Text style={trajetbox.itemtext}>
-                Train n°  { trajet.numero_train }
+                Train: { trajet.numero_train }
               </Text>
               <Text style={trajetbox.itemtextt}>
                 Classe:   { trajet.classe }

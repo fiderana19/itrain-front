@@ -2,7 +2,9 @@ import Marginer from '@/components/personalized/Marginer';
 import { colorBlue } from '@/constants/Colors';
 import useDeleteTrajet from '@/hooks/api/useDeleteTrajet';
 import useEditTrajet from '@/hooks/api/useEditTrajet';
+import useGetAllTrain from '@/hooks/api/useGetAllTrain';
 import useGetAllTrajet from '@/hooks/api/useGetAllTrajet';
+import useGetAllVille from '@/hooks/api/useGetAllVille';
 import usePostTrajet from '@/hooks/api/usePostTrajet';
 import { page, stylesPerso, trajetbox } from '@/src/styles/GeneralStyles';
 import { CreateTrajetType, EditTrajetType } from '@/types/trajet.type';
@@ -14,9 +16,12 @@ import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Button, StyleSheet, View, Text, ScrollView, Modal, TextInput, Pressable, Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
+import { SelectList } from 'react-native-dropdown-select-list';
 
 export default function HomeScreen() {
   const { data: trajets, refetch } = useGetAllTrajet();
+  const { data2search } = useGetAllVille();
+  const { train4select } = useGetAllTrain();
   const { handleSubmit: submitCreate, formState: { errors: create_errors }, control: create_control, setValue: setCreateValue, reset: createReset } = useForm<CreateTrajetType>({
     resolver: yupResolver(CreateTrajetValidation)
   })
@@ -40,6 +45,7 @@ export default function HomeScreen() {
 
   const showCalendar = () => {
     setShow(true)
+    console.log(trajets)
   }
 
   const handleDayPress = (day: any) => {    
@@ -86,7 +92,7 @@ export default function HomeScreen() {
   }
 
   const formater = (date: string) => {
-    return moment(date).format('YYYY-MM-DD')
+    return moment(date).format('YYYY-MM-DD');
   }
 
   return (
@@ -109,7 +115,7 @@ export default function HomeScreen() {
           { trajets && trajets.map((trajet: any, index: any) => (
             <View style={trajetbox.item} key={index}>
               <Text style={trajetbox.itemtitle}>
-                { trajet.gare_depart } vers  { trajet.gare_arrive }
+                { trajet.ville_depart } vers  { trajet.ville_arrive }
               </Text>
               <Text style={styles.trajetinfo}>
                 { formater(trajet.date_trajet) }
@@ -120,11 +126,11 @@ export default function HomeScreen() {
                   <Text style={trajetbox.itemheure}> { trajet.heure_arrive }</Text>
               </View>
               <View style={styles.flexy}>
-                <Text style={trajetbox.itemville}> { trajet.gare_depart }</Text>
-                <Text style={trajetbox.itemville}> { trajet.gare_arrive }</Text>
+                <Text style={trajetbox.itemville}> { trajet.ville_depart }</Text>
+                <Text style={trajetbox.itemville}> { trajet.ville_arrive }</Text>
               </View>
               <Text style={trajetbox.itemtrain}>
-                Train n°  { trajet.train_id }
+                Train  { trajet.numero_train }
               </Text>
               <Text style={trajetbox.itembillet}>
                 { trajet.billet } MGA
@@ -187,26 +193,30 @@ export default function HomeScreen() {
               name="gare_depart"
               control={create_control}
               render={({ field: { onChange, value } }) => (
-                <TextInput
-                  style={styles.input}
-                  onChangeText={onChange}
-                  value={value}
+                <SelectList 
+                  data={data2search}
+                  setSelected={onChange}
+                  searchPlaceholder='Saisir la ville'
+                  placeholder='Gare de depart'
+                  boxStyles={{borderRadius:5,paddingVertical:10}}
                 />
               )}
-            />      
+            />            
             {create_errors?.gare_depart && <Text style={styles.errors}>{create_errors?.gare_depart.message}</Text>}
             <Text>Gare d'arrivé : </Text>
             <Controller 
               name="gare_arrive"
               control={create_control}
               render={({ field: { onChange, value } }) => (
-                <TextInput
-                  style={styles.input}
-                  onChangeText={onChange}
-                  value={value}
+                <SelectList 
+                  data={data2search}
+                  setSelected={onChange}
+                  searchPlaceholder='Saisir la ville'
+                  placeholder="Gare d'arrivé"
+                  boxStyles={{borderRadius:5,paddingVertical:10}}
                 />
               )}
-            />  
+            /> 
             {create_errors?.gare_arrive && <Text style={styles.errors}>{create_errors?.gare_arrive.message}</Text>}
             <Text>Durée du trajet : </Text>
             <Controller 
@@ -265,13 +275,15 @@ export default function HomeScreen() {
               name="train_id"
               control={create_control}
               render={({ field: { onChange, value } }) => (
-                <TextInput
-                  style={styles.input}
-                  onChangeText={onChange}
-                  value={value}
+                <SelectList 
+                  data={train4select}
+                  setSelected={onChange}
+                  searchPlaceholder='Choisir le train'
+                  placeholder='Train du trajet'
+                  boxStyles={{borderRadius:5,paddingVertical:10}}
                 />
               )}
-            />  
+            /> 
             {create_errors?.train_id && <Text style={styles.errors}>{create_errors?.train_id.message}</Text>}
             <Button
             title="Ajouter"
@@ -324,27 +336,31 @@ export default function HomeScreen() {
                 control={edit_control}
                 defaultValue={selectedTrajet?.gare_depart}
                 render={({ field: { onChange, value } }) => (
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={onChange}
-                    value={value}
+                  <SelectList 
+                    data={data2search}
+                    setSelected={onChange}
+                    searchPlaceholder='Saisir la ville'
+                    placeholder={selectedTrajet?.gare_depart}
+                    boxStyles={{borderRadius:5,paddingVertical:10}}
                   />
                 )}
-              />      
+              />   
               {edit_errors?.gare_depart && <Text style={styles.errors}>{edit_errors?.gare_depart.message}</Text>}
               <Text>Gare d'arrivé : </Text>
               <Controller 
                 name="gare_arrive"
-                control={edit_control}
                 defaultValue={selectedTrajet?.gare_arrive}
+                control={edit_control}
                 render={({ field: { onChange, value } }) => (
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={onChange}
-                    value={value}
+                  <SelectList 
+                    data={data2search}
+                    setSelected={onChange}
+                    searchPlaceholder='Saisir la ville'
+                    placeholder={selectedTrajet?.gare_arrive}
+                    boxStyles={{borderRadius:5,paddingVertical:10}}
                   />
                 )}
-              />  
+              />
               {edit_errors?.gare_arrive && <Text style={styles.errors}>{edit_errors?.gare_arrive.message}</Text>}
               <Text>Durée du trajet : </Text>
               <Controller 
@@ -408,10 +424,12 @@ export default function HomeScreen() {
                 control={edit_control}
                 defaultValue={selectedTrajet?.train_id}
                 render={({ field: { onChange, value } }) => (
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={onChange}
-                    value={value}
+                  <SelectList 
+                    data={train4select}
+                    setSelected={onChange}
+                    searchPlaceholder='Choisir le train'
+                    placeholder={selectedTrajet?.train_id}
+                    boxStyles={{borderRadius:5,paddingVertical:10}}
                   />
                 )}
               />  

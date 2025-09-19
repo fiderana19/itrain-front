@@ -20,7 +20,7 @@ export default function SignupPageScreen() {
     resolver: yupResolver(SearchTrajetValidation)
   });
   const { mutateAsync: search, data: trajets } = useSearchTrajet();
-  const { data: villes, data2search } = useGetAllVille();
+  const { data2search } = useGetAllVille();
   const [show, setShow] = useState(false);
 
   const searchTrajet = async (data: SearchTrajetType) => {
@@ -118,9 +118,8 @@ export default function SignupPageScreen() {
           {trajets?.data && trajets?.data.map((trajet: any, index: any) => (
             <View style={trajetbox.item} key={index}>
               <Text style={trajetbox.itemtitle}>
-                { trajet.gare_depart } vers { trajet.gare_arrive }
+                { trajet.ville_depart } vers  { trajet.ville_arrive }
               </Text>
-              <Marginer value={10} />
               <Text style={styles.trajetinfo}>
                 { formater(trajet.date_trajet) }
               </Text>
@@ -130,18 +129,15 @@ export default function SignupPageScreen() {
                   <Text style={trajetbox.itemheure}> { trajet.heure_arrive }</Text>
               </View>
               <View style={styles.flexy}>
-                <Text style={trajetbox.itemville}> { trajet.gare_depart }</Text>
-                <Text style={trajetbox.itemville}> { trajet.gare_arrive }</Text>
+                <Text style={trajetbox.itemville}> { trajet.ville_depart }</Text>
+                <Text style={trajetbox.itemville}> { trajet.ville_arrive }</Text>
               </View>
-              <Text style={trajetbox.itemtext}>
-                Train n°  { trajet.numero_train }
-              </Text>
-              <Text style={trajetbox.itemtextt}>
-                Classe:   { trajet.classe }
+              <Text style={trajetbox.itemtrain}>
+                Train  { trajet.numero_train }
               </Text>
               <Text style={trajetbox.itembillet}>
                 { trajet.billet } MGA
-              </Text>
+              </Text>              
               <Text style={trajetbox.itemdispo}>
                 <Ionicons name='person' style={trajetbox.dispoicon} />
                 <Text>{ trajet.places_disponibles } place(s) disponible(s)</Text>

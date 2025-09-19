@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { QUERYCACHEKEY } from "./QueryCacheKey";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import showToast from "@/utils/toast";
 import { TOAST_TYPE } from "@/constants/Toast_type";
 import { getAllTrain } from "@/api/train";
@@ -12,6 +12,8 @@ export default function useGetAllTrain () {
         staleTime: Infinity
     })
 
+    const [data2search, setData2Search] = useState<any>([])
+
     useEffect(() => {
         if(isError) {
             showToast({
@@ -22,8 +24,21 @@ export default function useGetAllTrain () {
         }
     }, [error])
 
+    useEffect(() => {
+        if(data2search?.length === 0) {
+            data && data?.data.map((train: any) => (
+                setData2Search((prev: any) => [
+                    ...prev,
+                    {key: train?.train_id, value: `${train?.numero_train} - ${train?.capacite} places - ${train?.classe}`}
+                ])
+            ))
+            
+        }
+    }, [data?.data])
+
     return {
         data: data?.data,
+        train4select: data2search,
         isLoading,
         refetch
     }

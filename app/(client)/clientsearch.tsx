@@ -17,9 +17,11 @@ import { useAuth } from '../../context/AuthContext';
 import usePostReservation from '@/hooks/api/usePostReservation';
 import useGetAllReservation from '@/hooks/api/useGetAllReservation';
 import { ReservationPlacingValidation } from '@/validation/reservation.validation';
+import useGetAllVille from '@/hooks/api/useGetAllVille';
 
 export default function SignupPageScreen() {
   const { token } = useAuth();
+  const { data2search } = useGetAllVille();
   const { handleSubmit: submit, formState: { errors }, control, setValue } = useForm<SearchTrajetType>({
     resolver: yupResolver(SearchTrajetValidation)
   });
@@ -92,7 +94,7 @@ export default function SignupPageScreen() {
               control={control}
               render={({ field: { onChange, value } }) => (
                 <SelectList 
-                  data={ville}
+                  data={data2search}
                   setSelected={onChange}
                   searchPlaceholder='Saisir la ville'
                   placeholder='Gare de depart'
@@ -108,7 +110,7 @@ export default function SignupPageScreen() {
               control={control}
               render={({ field: { onChange, value } }) => (
                 <SelectList 
-                  data={ville}
+                  data={data2search}
                   setSelected={onChange}
                   searchPlaceholder='Saisir la ville'
                   placeholder='Gare de depart'
@@ -160,7 +162,7 @@ export default function SignupPageScreen() {
           { trajets && trajets?.data.map((trajet: any, index: any) => (
             <View style={trajetbox.item} key={index}>
               <Text style={trajetbox.itemtitle}>
-                { trajet.gare_depart } vers { trajet.gare_arrive }
+                { trajet.ville_depart } vers { trajet.ville_arrive }
               </Text>
               <Marginer value={10} />
               <Text style={styles.trajetinfo}>
@@ -172,8 +174,8 @@ export default function SignupPageScreen() {
                   <Text style={trajetbox.itemheure}> { trajet.heure_arrive }</Text>
               </View>
               <View style={styles.flexy}>
-                <Text style={trajetbox.itemville}> { trajet.gare_depart }</Text>
-                <Text style={trajetbox.itemville}> { trajet.gare_arrive }</Text>
+                <Text style={trajetbox.itemville}> { trajet.ville_depart }</Text>
+                <Text style={trajetbox.itemville}> { trajet.ville_arrive }</Text>
               </View>
               <Text style={trajetbox.itemtext}>
                 Train n°  { trajet.numero_train }
@@ -203,7 +205,7 @@ export default function SignupPageScreen() {
               <Text style={trajetbox.itemdispo}>Reservation de billet(s)</Text>
               <View style={trajetbox.item}>
                 <Text style={trajetbox.itemtitle}>
-                  { selectedTrajet?.gare_depart } vers { selectedTrajet?.gare_arrive }
+                  { selectedTrajet?.ville_depart } vers { selectedTrajet?.ville_arrive }
                 </Text>
                 <Marginer value={10} />
                 <Text style={styles.trajetinfo}>
@@ -215,8 +217,8 @@ export default function SignupPageScreen() {
                     <Text style={trajetbox.itemheure}> { selectedTrajet?.heure_arrive }</Text>
                 </View>
                 <View style={styles.flexy}>
-                  <Text style={trajetbox.itemville}> { selectedTrajet?.gare_depart }</Text>
-                  <Text style={trajetbox.itemville}> { selectedTrajet?.gare_arrive }</Text>
+                  <Text style={trajetbox.itemville}> { selectedTrajet?.ville_depart }</Text>
+                  <Text style={trajetbox.itemville}> { selectedTrajet?.ville_arrive }</Text>
                 </View>
                 <Text style={trajetbox.itemtext}>
                 Train n°  { selectedTrajet?.numero_train }
