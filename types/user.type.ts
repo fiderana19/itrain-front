@@ -1,11 +1,11 @@
 export type LoginUserType = {
-    email: string;
-    motdepasse: string;
-}
+  email: string;
+  motdepasse: string;
+};
 
 export type SignupUserType = {
-    nom: string;
-    email: string;
-    telephone: string;
-    motdepasse: string;
-}
+  nom: string;
+  email: string;
+  telephone: string;
+  motdepasse: string;
+};

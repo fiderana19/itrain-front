@@ -1,225 +1,298 @@
-import Marginer from '@/components/personalized/Marginer';
-import { colorBlue } from '@/constants/Colors';
-import useDeleteTrajet from '@/hooks/api/useDeleteTrajet';
-import useEditTrajet from '@/hooks/api/useEditTrajet';
-import useGetAllTrain from '@/hooks/api/useGetAllTrain';
-import useGetAllTrajet from '@/hooks/api/useGetAllTrajet';
-import useGetAllVille from '@/hooks/api/useGetAllVille';
-import usePostTrajet from '@/hooks/api/usePostTrajet';
-import { page, stylesPerso, trajetbox } from '@/src/styles/GeneralStyles';
-import { CreateTrajetType, EditTrajetType } from '@/types/trajet.type';
-import { CreateTrajetValidation, EditTrajetValidation } from '@/validation/trajet.validation';
-import { Ionicons } from '@expo/vector-icons';
-import { yupResolver } from '@hookform/resolvers/yup';
-import moment from 'moment';
-import React, { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { Button, StyleSheet, View, Text, ScrollView, Modal, TextInput, Pressable, Alert } from 'react-native';
-import { Calendar } from 'react-native-calendars';
-import { SelectList } from 'react-native-dropdown-select-list';
+import Marginer from "@/components/personalized/Marginer";
+import { colorBlue } from "@/constants/Colors";
+import useDeleteTrajet from "@/hooks/api/useDeleteTrajet";
+import useEditTrajet from "@/hooks/api/useEditTrajet";
+import useGetAllTrain from "@/hooks/api/useGetAllTrain";
+import useGetAllTrajet from "@/hooks/api/useGetAllTrajet";
+import useGetAllVille from "@/hooks/api/useGetAllVille";
+import usePostTrajet from "@/hooks/api/usePostTrajet";
+import { page, stylesPerso, trajetbox } from "@/src/styles/GeneralStyles";
+import { CreateTrajetType, EditTrajetType } from "@/types/trajet.type";
+import {
+  CreateTrajetValidation,
+  EditTrajetValidation,
+} from "@/validation/trajet.validation";
+import { Ionicons } from "@expo/vector-icons";
+import { yupResolver } from "@hookform/resolvers/yup";
+import moment from "moment";
+import React, { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import {
+  Button,
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  Modal,
+  TextInput,
+  Pressable,
+  Alert,
+} from "react-native";
+import { Calendar } from "react-native-calendars";
+import { SelectList } from "react-native-dropdown-select-list";
 
 export default function HomeScreen() {
   const { data: trajets, refetch } = useGetAllTrajet();
   const { data2search } = useGetAllVille();
   const { train4select } = useGetAllTrain();
-  const { handleSubmit: submitCreate, formState: { errors: create_errors }, control: create_control, setValue: setCreateValue, reset: createReset } = useForm<CreateTrajetType>({
-    resolver: yupResolver(CreateTrajetValidation)
-  })
-  const { handleSubmit: submitEdit, formState: { errors: edit_errors }, control: edit_control, setValue: setEditValue, reset: editReset } = useForm<EditTrajetType>({
-    resolver: yupResolver(EditTrajetValidation)
-  })
-  const { mutateAsync: postTrajet } = usePostTrajet({action() {
-    refetch()
-  },})
-  const { mutateAsync: editTrajet } = useEditTrajet({action() {
-    refetch()
-  },});  
-  const { mutateAsync: deleteTrajet } = useDeleteTrajet({action() {
-    refetch()
-  },});  
+  const {
+    handleSubmit: submitCreate,
+    formState: { errors: create_errors },
+    control: create_control,
+    setValue: setCreateValue,
+    reset: createReset,
+  } = useForm<CreateTrajetType>({
+    resolver: yupResolver(CreateTrajetValidation),
+  });
+  const {
+    handleSubmit: submitEdit,
+    formState: { errors: edit_errors },
+    control: edit_control,
+    setValue: setEditValue,
+    reset: editReset,
+  } = useForm<EditTrajetType>({
+    resolver: yupResolver(EditTrajetValidation),
+  });
+  const { mutateAsync: postTrajet } = usePostTrajet({
+    action() {
+      refetch();
+    },
+  });
+  const { mutateAsync: editTrajet } = useEditTrajet({
+    action() {
+      refetch();
+    },
+  });
+  const { mutateAsync: deleteTrajet } = useDeleteTrajet({
+    action() {
+      refetch();
+    },
+  });
   const [show, setShow] = useState(false);
   const [editshow, setEditShow] = useState(false);
-  const [selectedTrajet, setSelectedTrajet] = useState<EditTrajetType | null>(null);
-  const [addvisible , setAddVisible] = useState(false)
-  const [editvisible , setEditVisible] = useState(false)
+  const [selectedTrajet, setSelectedTrajet] = useState<EditTrajetType | null>(
+    null,
+  );
+  const [addvisible, setAddVisible] = useState(false);
+  const [editvisible, setEditVisible] = useState(false);
 
   const showCalendar = () => {
-    setShow(true)
-    console.log(trajets)
-  }
+    setShow(true);
+    console.log(trajets);
+  };
 
-  const handleDayPress = (day: any) => {    
-    setCreateValue('date_trajet', day.dateString)
+  const handleDayPress = (day: any) => {
+    setCreateValue("date_trajet", day.dateString);
 
     setShow(false);
-  }
+  };
 
   const showEditCalendar = () => {
-    setEditShow(true)
-  }
+    setEditShow(true);
+  };
 
-  const handleEditDayPress = (day: any) => {    
-    setEditValue('date_trajet', day.dateString)
+  const handleEditDayPress = (day: any) => {
+    setEditValue("date_trajet", day.dateString);
 
     setEditShow(false);
-  }
+  };
 
-  const handleCreate = async (data: CreateTrajetType) => {    
+  const handleCreate = async (data: CreateTrajetType) => {
     await postTrajet(data);
     createReset();
     setAddVisible(false);
-  }
+  };
 
-  const handleEditSubmit = async (data: EditTrajetType) => {  
+  const handleEditSubmit = async (data: EditTrajetType) => {
     await editTrajet(data);
     editReset();
     setSelectedTrajet(null);
     setEditVisible(false);
-  }
+  };
 
   const handleEdit = async (item: EditTrajetType) => {
     setSelectedTrajet(item);
-    setEditValue('trajet_id', item?.trajet_id)
+    setEditValue("trajet_id", item?.trajet_id);
 
-    setEditVisible(true)
-  }
+    setEditVisible(true);
+  };
 
   const deleteHandler = async (trajet: string) => {
     Alert.alert("Suppression", "Voulez-vous vraiment supprimer ce train ?", [
-      {text: "Oui", onPress: ()=> {deleteTrajet(trajet)}},
-      {text: "Non" , onPress: ()=>{}}
-    ])
-  }
+      {
+        text: "Oui",
+        onPress: () => {
+          deleteTrajet(trajet);
+        },
+      },
+      { text: "Non", onPress: () => {} },
+    ]);
+  };
 
   const formater = (date: string) => {
-    return moment(date).format('YYYY-MM-DD');
-  }
+    return moment(date).format("YYYY-MM-DD");
+  };
 
   return (
-      <ScrollView style={stylesPerso.container}>
-        <View style={page.paddingnormal}>
+    <ScrollView style={stylesPerso.container}>
+      <View style={page.paddingnormal}>
+        <Marginer value={15} />
+        <View style={styles.acc}>
+          <Text style={styles.title}>LISTE DES TRAJETS</Text>
           <Marginer value={15} />
-          <View style={styles.acc}>
-            <Text style={styles.title}>
-              LISTE DES TRAJETS
-            </Text>
-            <Marginer value={15} />
-            <View style={styles.btn}>
-              <Pressable onPress={()=>{setAddVisible(true)}} style={ stylesPerso.btnDefault }>
-                <Ionicons name='add-circle' style={stylesPerso.iconfont} />
-                <Text>AJOUTER</Text>
-              </Pressable>
-            </View>
-            <Marginer value={15} />
+          <View style={styles.btn}>
+            <Pressable
+              onPress={() => {
+                setAddVisible(true);
+              }}
+              style={stylesPerso.btnDefault}
+            >
+              <Ionicons name="add-circle" style={stylesPerso.iconfont} />
+              <Text>AJOUTER</Text>
+            </Pressable>
           </View>
-          { trajets && trajets.map((trajet: any, index: any) => (
+          <Marginer value={15} />
+        </View>
+        {trajets &&
+          trajets.map((trajet: any, index: any) => (
             <View style={trajetbox.item} key={index}>
               <Text style={trajetbox.itemtitle}>
-                { trajet.ville_depart } vers  { trajet.ville_arrive }
+                {trajet.ville_depart} vers {trajet.ville_arrive}
               </Text>
               <Text style={styles.trajetinfo}>
-                { formater(trajet.date_trajet) }
+                {formater(trajet.date_trajet)}
               </Text>
-              <View style={styles.flexy} >
-                  <Text style={trajetbox.itemheure}> { trajet.heure_depart }</Text> 
-                  <Text style={trajetbox.itemduree}>-----   { trajet.duree_trajet }  ----</Text>
-                  <Text style={trajetbox.itemheure}> { trajet.heure_arrive }</Text>
+              <View style={styles.flexy}>
+                <Text style={trajetbox.itemheure}> {trajet.heure_depart}</Text>
+                <Text style={trajetbox.itemduree}>
+                  ----- {trajet.duree_trajet} ----
+                </Text>
+                <Text style={trajetbox.itemheure}> {trajet.heure_arrive}</Text>
               </View>
               <View style={styles.flexy}>
-                <Text style={trajetbox.itemville}> { trajet.ville_depart }</Text>
-                <Text style={trajetbox.itemville}> { trajet.ville_arrive }</Text>
+                <Text style={trajetbox.itemville}> {trajet.ville_depart}</Text>
+                <Text style={trajetbox.itemville}> {trajet.ville_arrive}</Text>
               </View>
               <Text style={trajetbox.itemtrain}>
-                Train  { trajet.numero_train }
+                Train {trajet.numero_train}
               </Text>
-              <Text style={trajetbox.itembillet}>
-                { trajet.billet } MGA
-              </Text>
+              <Text style={trajetbox.itembillet}>{trajet.billet} MGA</Text>
               <Marginer value={10} />
               <View style={styles.flexend}>
-                <Pressable onPress={()=>{handleEdit(trajet)}}>
+                <Pressable
+                  onPress={() => {
+                    handleEdit(trajet);
+                  }}
+                >
                   <View style={stylesPerso.btnPrimary}>
-                    <Ionicons name='pencil-outline' style={stylesPerso.iconfont} />
+                    <Ionicons
+                      name="pencil-outline"
+                      style={stylesPerso.iconfont}
+                    />
                     <Text>Modifier</Text>
                   </View>
                 </Pressable>
-                <Pressable onPress={()=>{deleteHandler(trajet.trajet_id)}}>
+                <Pressable
+                  onPress={() => {
+                    deleteHandler(trajet.trajet_id);
+                  }}
+                >
                   <View style={stylesPerso.btnDanger}>
-                    <Ionicons name='trash-outline' style={stylesPerso.iconfont}/>
+                    <Ionicons
+                      name="trash-outline"
+                      style={stylesPerso.iconfont}
+                    />
                     <Text>Supprimer</Text>
                   </View>
                 </Pressable>
               </View>
             </View>
-          )) }
-        </View>
+          ))}
+      </View>
 
-        {/* Modal d'ajout de trajet */}
-        <Modal animationType='slide' visible={addvisible}>
-        <ScrollView style={styles.comptepagescroll}> 
-          <Pressable onPress={()=>{setAddVisible(false)}} style={styles.closeview}>
-            <Ionicons name='close' style={styles.closeicon} /><Text style={styles.close}> Fermer</Text>
+      {/* Modal d'ajout de trajet */}
+      <Modal animationType="slide" visible={addvisible}>
+        <ScrollView style={styles.comptepagescroll}>
+          <Pressable
+            onPress={() => {
+              setAddVisible(false);
+            }}
+            style={styles.closeview}
+          >
+            <Ionicons name="close" style={styles.closeicon} />
+            <Text style={styles.close}> Fermer</Text>
           </Pressable>
-          <Text style={styles.font}>
-            AJOUTER UNE TRAJET
-          </Text>
-          <Marginer value={15} />  
+          <Text style={styles.font}>AJOUTER UNE TRAJET</Text>
+          <Marginer value={15} />
           <View>
             <Text>Date du trajet : </Text>
             <View style={styles.calendarview}>
-              <Ionicons  name='calendar' style={styles.calendaricon} onPress={showCalendar} /> 
-              <Controller 
+              <Ionicons
+                name="calendar"
+                style={styles.calendaricon}
+                onPress={showCalendar}
+              />
+              <Controller
                 name="date_trajet"
                 control={create_control}
                 render={({ field: { value } }) => (
                   <TextInput
                     style={styles.input}
                     value={value}
-                    placeholder='Selectionner la date du trajet...'
+                    placeholder="Selectionner la date du trajet..."
                     aria-disabled
                   />
                 )}
-              />             
+              />
             </View>
             {show && (
-            <Calendar
-              onDayPress={handleDayPress}
-              style={stylesPerso.cal}
-            />
+              <Calendar onDayPress={handleDayPress} style={stylesPerso.cal} />
             )}
-            {create_errors?.date_trajet && <Text style={styles.errors}>{create_errors?.date_trajet.message}</Text>}
+            {create_errors?.date_trajet && (
+              <Text style={styles.errors}>
+                {create_errors?.date_trajet.message}
+              </Text>
+            )}
             <Text>Gare de depart : </Text>
-            <Controller 
+            <Controller
               name="gare_depart"
               control={create_control}
               render={({ field: { onChange, value } }) => (
-                <SelectList 
+                <SelectList
                   data={data2search}
                   setSelected={onChange}
-                  searchPlaceholder='Saisir la ville'
-                  placeholder='Gare de depart'
-                  boxStyles={{borderRadius:5,paddingVertical:10}}
+                  searchPlaceholder="Saisir la ville"
+                  placeholder="Gare de depart"
+                  boxStyles={{ borderRadius: 5, paddingVertical: 10 }}
                 />
               )}
-            />            
-            {create_errors?.gare_depart && <Text style={styles.errors}>{create_errors?.gare_depart.message}</Text>}
+            />
+            {create_errors?.gare_depart && (
+              <Text style={styles.errors}>
+                {create_errors?.gare_depart.message}
+              </Text>
+            )}
             <Text>Gare d'arrivé : </Text>
-            <Controller 
+            <Controller
               name="gare_arrive"
               control={create_control}
               render={({ field: { onChange, value } }) => (
-                <SelectList 
+                <SelectList
                   data={data2search}
                   setSelected={onChange}
-                  searchPlaceholder='Saisir la ville'
+                  searchPlaceholder="Saisir la ville"
                   placeholder="Gare d'arrivé"
-                  boxStyles={{borderRadius:5,paddingVertical:10}}
+                  boxStyles={{ borderRadius: 5, paddingVertical: 10 }}
                 />
               )}
-            /> 
-            {create_errors?.gare_arrive && <Text style={styles.errors}>{create_errors?.gare_arrive.message}</Text>}
+            />
+            {create_errors?.gare_arrive && (
+              <Text style={styles.errors}>
+                {create_errors?.gare_arrive.message}
+              </Text>
+            )}
             <Text>Durée du trajet : </Text>
-            <Controller 
+            <Controller
               name="duree_trajet"
               control={create_control}
               render={({ field: { onChange, value } }) => (
@@ -229,10 +302,14 @@ export default function HomeScreen() {
                   value={value}
                 />
               )}
-            />  
-            {create_errors?.duree_trajet && <Text style={styles.errors}>{create_errors?.duree_trajet.message}</Text>}
+            />
+            {create_errors?.duree_trajet && (
+              <Text style={styles.errors}>
+                {create_errors?.duree_trajet.message}
+              </Text>
+            )}
             <Text>Heure de depart : </Text>
-            <Controller 
+            <Controller
               name="heure_depart"
               control={create_control}
               render={({ field: { onChange, value } }) => (
@@ -242,10 +319,14 @@ export default function HomeScreen() {
                   value={value}
                 />
               )}
-            />  
-            {create_errors?.heure_depart && <Text style={styles.errors}>{create_errors?.heure_depart.message}</Text>}
+            />
+            {create_errors?.heure_depart && (
+              <Text style={styles.errors}>
+                {create_errors?.heure_depart.message}
+              </Text>
+            )}
             <Text>Heure d'arrivé : </Text>
-            <Controller 
+            <Controller
               name="heure_arrive"
               control={create_control}
               render={({ field: { onChange, value } }) => (
@@ -255,10 +336,14 @@ export default function HomeScreen() {
                   value={value}
                 />
               )}
-            />  
-            {create_errors?.heure_arrive && <Text style={styles.errors}>{create_errors?.heure_arrive.message}</Text>}
+            />
+            {create_errors?.heure_arrive && (
+              <Text style={styles.errors}>
+                {create_errors?.heure_arrive.message}
+              </Text>
+            )}
             <Text>Billet : </Text>
-            <Controller 
+            <Controller
               name="billet"
               control={create_control}
               render={({ field: { onChange, value } }) => (
@@ -268,48 +353,58 @@ export default function HomeScreen() {
                   value={value}
                 />
               )}
-            />              
-            {create_errors?.billet && <Text style={styles.errors}>{create_errors?.billet.message}</Text>}
+            />
+            {create_errors?.billet && (
+              <Text style={styles.errors}>{create_errors?.billet.message}</Text>
+            )}
             <Text>Train : </Text>
-            <Controller 
+            <Controller
               name="train_id"
               control={create_control}
               render={({ field: { onChange, value } }) => (
-                <SelectList 
+                <SelectList
                   data={train4select}
                   setSelected={onChange}
-                  searchPlaceholder='Choisir le train'
-                  placeholder='Train du trajet'
-                  boxStyles={{borderRadius:5,paddingVertical:10}}
+                  searchPlaceholder="Choisir le train"
+                  placeholder="Train du trajet"
+                  boxStyles={{ borderRadius: 5, paddingVertical: 10 }}
                 />
               )}
-            /> 
-            {create_errors?.train_id && <Text style={styles.errors}>{create_errors?.train_id.message}</Text>}
-            <Button
-            title="Ajouter"
-            onPress={submitCreate(handleCreate)}
             />
+            {create_errors?.train_id && (
+              <Text style={styles.errors}>
+                {create_errors?.train_id.message}
+              </Text>
+            )}
+            <Button title="Ajouter" onPress={submitCreate(handleCreate)} />
           </View>
         </ScrollView>
-        </Modal>
+      </Modal>
 
-        {/* Modal de modification de trajet */}
-        <Modal animationType='slide' visible={editvisible}>
-        <ScrollView style={styles.comptepagescroll}> 
-          <Pressable onPress={()=>{setEditVisible(false)}} style={styles.closeview}>
-            <Ionicons name='close' style={styles.closeicon} /><Text style={styles.close}> Fermer</Text>
+      {/* Modal de modification de trajet */}
+      <Modal animationType="slide" visible={editvisible}>
+        <ScrollView style={styles.comptepagescroll}>
+          <Pressable
+            onPress={() => {
+              setEditVisible(false);
+            }}
+            style={styles.closeview}
+          >
+            <Ionicons name="close" style={styles.closeicon} />
+            <Text style={styles.close}> Fermer</Text>
           </Pressable>
-          <Text style={styles.font}>
-            MODIFIER TRAJET
-          </Text>
-          <Marginer value={5} />  
-          {
-            selectedTrajet &&
+          <Text style={styles.font}>MODIFIER TRAJET</Text>
+          <Marginer value={5} />
+          {selectedTrajet && (
             <View>
               <Text>Date du trajet : </Text>
               <View style={styles.calendarview}>
-                <Ionicons  name='calendar' style={styles.calendaricon} onPress={showEditCalendar} /> 
-                <Controller 
+                <Ionicons
+                  name="calendar"
+                  style={styles.calendaricon}
+                  onPress={showEditCalendar}
+                />
+                <Controller
                   name="date_trajet"
                   defaultValue={formater(selectedTrajet?.date_trajet)}
                   control={edit_control}
@@ -317,53 +412,65 @@ export default function HomeScreen() {
                     <TextInput
                       style={styles.input}
                       value={value}
-                      placeholder='Selectionner la date du trajet...'
+                      placeholder="Selectionner la date du trajet..."
                       aria-disabled
                     />
                   )}
-                />             
+                />
               </View>
               {editshow && (
-              <Calendar
-                onDayPress={handleEditDayPress}
-                style={stylesPerso.cal}
-              />
+                <Calendar
+                  onDayPress={handleEditDayPress}
+                  style={stylesPerso.cal}
+                />
               )}
-              {edit_errors?.date_trajet && <Text style={styles.errors}>{edit_errors?.date_trajet.message}</Text>}
+              {edit_errors?.date_trajet && (
+                <Text style={styles.errors}>
+                  {edit_errors?.date_trajet.message}
+                </Text>
+              )}
               <Text>Gare de depart : </Text>
-              <Controller 
+              <Controller
                 name="gare_depart"
                 control={edit_control}
                 defaultValue={selectedTrajet?.gare_depart}
                 render={({ field: { onChange, value } }) => (
-                  <SelectList 
+                  <SelectList
                     data={data2search}
                     setSelected={onChange}
-                    searchPlaceholder='Saisir la ville'
+                    searchPlaceholder="Saisir la ville"
                     placeholder={selectedTrajet?.gare_depart}
-                    boxStyles={{borderRadius:5,paddingVertical:10}}
+                    boxStyles={{ borderRadius: 5, paddingVertical: 10 }}
                   />
                 )}
-              />   
-              {edit_errors?.gare_depart && <Text style={styles.errors}>{edit_errors?.gare_depart.message}</Text>}
+              />
+              {edit_errors?.gare_depart && (
+                <Text style={styles.errors}>
+                  {edit_errors?.gare_depart.message}
+                </Text>
+              )}
               <Text>Gare d'arrivé : </Text>
-              <Controller 
+              <Controller
                 name="gare_arrive"
                 defaultValue={selectedTrajet?.gare_arrive}
                 control={edit_control}
                 render={({ field: { onChange, value } }) => (
-                  <SelectList 
+                  <SelectList
                     data={data2search}
                     setSelected={onChange}
-                    searchPlaceholder='Saisir la ville'
+                    searchPlaceholder="Saisir la ville"
                     placeholder={selectedTrajet?.gare_arrive}
-                    boxStyles={{borderRadius:5,paddingVertical:10}}
+                    boxStyles={{ borderRadius: 5, paddingVertical: 10 }}
                   />
                 )}
               />
-              {edit_errors?.gare_arrive && <Text style={styles.errors}>{edit_errors?.gare_arrive.message}</Text>}
+              {edit_errors?.gare_arrive && (
+                <Text style={styles.errors}>
+                  {edit_errors?.gare_arrive.message}
+                </Text>
+              )}
               <Text>Durée du trajet : </Text>
-              <Controller 
+              <Controller
                 name="duree_trajet"
                 control={edit_control}
                 defaultValue={selectedTrajet?.duree_trajet}
@@ -374,10 +481,14 @@ export default function HomeScreen() {
                     value={value}
                   />
                 )}
-              />  
-              {edit_errors?.duree_trajet && <Text style={styles.errors}>{edit_errors?.duree_trajet.message}</Text>}
+              />
+              {edit_errors?.duree_trajet && (
+                <Text style={styles.errors}>
+                  {edit_errors?.duree_trajet.message}
+                </Text>
+              )}
               <Text>Heure de depart : </Text>
-              <Controller 
+              <Controller
                 name="heure_depart"
                 control={edit_control}
                 defaultValue={selectedTrajet?.heure_depart}
@@ -388,10 +499,14 @@ export default function HomeScreen() {
                     value={value}
                   />
                 )}
-              />  
-              {edit_errors?.heure_depart && <Text style={styles.errors}>{edit_errors?.heure_depart.message}</Text>}
+              />
+              {edit_errors?.heure_depart && (
+                <Text style={styles.errors}>
+                  {edit_errors?.heure_depart.message}
+                </Text>
+              )}
               <Text>Heure d'arrivé : </Text>
-              <Controller 
+              <Controller
                 name="heure_arrive"
                 control={edit_control}
                 defaultValue={selectedTrajet?.heure_arrive}
@@ -402,10 +517,14 @@ export default function HomeScreen() {
                     value={value}
                   />
                 )}
-              />  
-              {edit_errors?.heure_arrive && <Text style={styles.errors}>{edit_errors?.heure_arrive.message}</Text>}
+              />
+              {edit_errors?.heure_arrive && (
+                <Text style={styles.errors}>
+                  {edit_errors?.heure_arrive.message}
+                </Text>
+              )}
               <Text>Billet : </Text>
-              <Controller 
+              <Controller
                 name="billet"
                 control={edit_control}
                 defaultValue={selectedTrajet?.billet}
@@ -416,148 +535,149 @@ export default function HomeScreen() {
                     value={value}
                   />
                 )}
-              />              
-              {edit_errors?.billet && <Text style={styles.errors}>{edit_errors?.billet.message}</Text>}
+              />
+              {edit_errors?.billet && (
+                <Text style={styles.errors}>{edit_errors?.billet.message}</Text>
+              )}
               <Text>Train : </Text>
-              <Controller 
+              <Controller
                 name="train_id"
                 control={edit_control}
                 defaultValue={selectedTrajet?.train_id}
                 render={({ field: { onChange, value } }) => (
-                  <SelectList 
+                  <SelectList
                     data={train4select}
                     setSelected={onChange}
-                    searchPlaceholder='Choisir le train'
+                    searchPlaceholder="Choisir le train"
                     placeholder={selectedTrajet?.train_id}
-                    boxStyles={{borderRadius:5,paddingVertical:10}}
+                    boxStyles={{ borderRadius: 5, paddingVertical: 10 }}
                   />
                 )}
-              />  
-              {edit_errors?.train_id && <Text style={styles.errors}>{edit_errors?.train_id.message}</Text>}
-              <Button
-                title="Modifier"
-                onPress={submitEdit(handleEditSubmit)}
               />
+              {edit_errors?.train_id && (
+                <Text style={styles.errors}>
+                  {edit_errors?.train_id.message}
+                </Text>
+              )}
+              <Button title="Modifier" onPress={submitEdit(handleEditSubmit)} />
             </View>
-          }
+          )}
         </ScrollView>
-        </Modal>
-      </ScrollView>
+      </Modal>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   btn: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-end'
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-end",
   },
-  comptepage : {
-    padding: 50
-  },
-  comptepagescroll : {
+  comptepage: {
     padding: 50,
-    height: 1000
+  },
+  comptepagescroll: {
+    padding: 50,
+    height: 1000,
   },
   input: {
     borderWidth: 2,
-    borderColor: 'grey',
+    borderColor: "grey",
     minWidth: 200,
-    textAlignVertical: 'center',
+    textAlignVertical: "center",
     paddingLeft: 10,
     padding: 10,
     borderRadius: 5,
     marginBottom: 7,
-    color: "black"
+    color: "black",
   },
-  acc : {
-    width: '100%',
-    height : 'auto',
-    textAlign: 'center'
+  acc: {
+    width: "100%",
+    height: "auto",
+    textAlign: "center",
   },
-  title : {
-    color : colorBlue ,
-    fontSize : 22 , 
-    textAlign: 'center',
-    fontWeight : 'bold',
-  } , 
-  trajet :{
-    paddingHorizontal : 10,
-    paddingVertical: 25
+  title: {
+    color: colorBlue,
+    fontSize: 22,
+    textAlign: "center",
+    fontWeight: "bold",
   },
-  trajettitle : {
-    fontSize : 20 , 
-    textAlign : 'center' , 
-    fontWeight : 'bold',
+  trajet: {
+    paddingHorizontal: 10,
+    paddingVertical: 25,
   },
-  flexy : {
-    display : 'flex', 
-    alignItems : 'center' ,
-    textAlign : 'center',
-    flexDirection : 'row',
-    justifyContent : 'space-between',
+  trajettitle: {
+    fontSize: 20,
+    textAlign: "center",
+    fontWeight: "bold",
   },
-  flexend : {
-    display : 'flex', 
-    alignItems : 'center' ,
-    textAlign : 'center',
-    flexDirection : 'row',
-    justifyContent : 'flex-end',
-    gap: 5
+  flexy: {
+    display: "flex",
+    alignItems: "center",
+    textAlign: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
-  box : {
-    width : '100%' ,
-    minHeight : 150 ,
-    backgroundColor : colorBlue ,
-    borderRadius : 5 ,
-    marginVertical : 10 ,
-    padding : 20
-  } ,
-  font : {
-    color : colorBlue ,
-    fontSize : 24 , 
-    textAlign : 'center' , 
-    fontWeight : 'bold'
+  flexend: {
+    display: "flex",
+    alignItems: "center",
+    textAlign: "center",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 5,
   },
-  trajetinfo : {
-    fontSize : 18 , 
-    textAlign : 'center' , 
-  }
-  ,
-  trajetville : {
-    fontSize : 20 , 
-    textAlign : 'center' , 
-    fontWeight: 'semibold'
+  box: {
+    width: "100%",
+    minHeight: 150,
+    backgroundColor: colorBlue,
+    borderRadius: 5,
+    marginVertical: 10,
+    padding: 20,
+  },
+  font: {
+    color: colorBlue,
+    fontSize: 24,
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  trajetinfo: {
+    fontSize: 18,
+    textAlign: "center",
+  },
+  trajetville: {
+    fontSize: 20,
+    textAlign: "center",
+    fontWeight: "semibold",
   },
   calendarview: {
-    position: 'relative',
-
+    position: "relative",
   },
   calendaricon: {
-    position: 'absolute',
+    position: "absolute",
     fontSize: 20,
-    paddingLeft: '85%',
+    paddingLeft: "85%",
     paddingVertical: 15,
     paddingRight: 15,
-    zIndex: 500
+    zIndex: 500,
   },
   close: {
-    textAlign:'right',
+    textAlign: "right",
     fontSize: 18,
-    fontWeight: 'bold'
+    fontWeight: "bold",
   },
   closeicon: {
     fontSize: 22,
-    fontWeight: 'bold'
+    fontWeight: "bold",
   },
   closeview: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-end'
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-end",
   },
   errors: {
     marginBottom: 5,
-    color: 'red',
-    textAlign: "left"
-  }
+    color: "red",
+    textAlign: "left",
+  },
 });

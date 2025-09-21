@@ -1,140 +1,154 @@
-import Marginer from '@/components/personalized/Marginer';
-import { colorBlue } from '@/constants/Colors';
-import { stylesPerso } from '@/src/styles/GeneralStyles';
-import { Link } from 'expo-router';
-import { StyleSheet, View, Text, ScrollView, ImageBackground } from 'react-native';
-import { useAuth } from '../../context/AuthContext';
-import useGetUserById from '@/hooks/api/useGetUserById';
+import Marginer from "@/components/personalized/Marginer";
+import { colorBlue } from "@/constants/Colors";
+import { stylesPerso } from "@/src/styles/GeneralStyles";
+import { Link } from "expo-router";
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  ImageBackground,
+} from "react-native";
+import { useAuth } from "../../context/AuthContext";
+import useGetUserById from "@/hooks/api/useGetUserById";
 
 export default function HomeScreen() {
   const { token } = useAuth();
-  const { data: user } = useGetUserById(token ? JSON.parse(atob(token.split('.')[1])).id : '')
-  const Manakara = '../../assets/photo/manakara.jpg';
-  const Tana = '../../assets/photo/tana.jpg';
-  const Antsirabe = '../../assets/photo/antsirabe.jpg';
-  const Fianara = '../../assets/photo/fianara.jpg';
-  const Bg = '../../assets/photo/soarano.jpg';  
+  const { data: user } = useGetUserById(
+    token ? JSON.parse(atob(token.split(".")[1])).id : "",
+  );
+  const Manakara = "../../assets/photo/manakara.jpg";
+  const Tana = "../../assets/photo/tana.jpg";
+  const Antsirabe = "../../assets/photo/antsirabe.jpg";
+  const Fianara = "../../assets/photo/fianara.jpg";
+  const Bg = "../../assets/photo/soarano.jpg";
 
   return (
     <ScrollView style={stylesPerso.container}>
-    <View>
-      <ScrollView style={home.acc}>
-        <ImageBackground source={require(Bg)} style={home.imgBg}>
-          <View style={home.home}>
-            {
-              user &&
+      <View>
+        <ScrollView style={home.acc}>
+          <ImageBackground source={require(Bg)} style={home.imgBg}>
+            <View style={home.home}>
+              {user && (
+                <Text style={home.title}>Bienvenue, {user[0].nom} !</Text>
+              )}
+              <Marginer value={50} />
               <Text style={home.title}>
-                Bienvenue, {user[0].nom} !
+                Plateforme de reservation de billet de train à Madagascar
               </Text>
-            }
-            <Marginer value={50} />  
-            <Text style={home.title}>
-              Plateforme de reservation de billet de train à Madagascar
-            </Text>
-            <Text style={home.resrvationtitle}>
-              Reserver en ligne votre ticket dès maintenant 
-            </Text>
-            <Marginer value={20} />  
-            <View style={home.btn}>
-              <Link href="/clientsearch" style={stylesPerso.btnPrimary}>
-                RESERVER
-              </Link>
+              <Text style={home.resrvationtitle}>
+                Reserver en ligne votre ticket dès maintenant
+              </Text>
+              <Marginer value={20} />
+              <View style={home.btn}>
+                <Link href="/clientsearch" style={stylesPerso.btnPrimary}>
+                  RESERVER
+                </Link>
+              </View>
             </View>
+          </ImageBackground>
+        </ScrollView>
+        <ScrollView style={home.banner}>
+          <Text style={home.font}>
+            Partez en voyage les mains dans les poches !
+          </Text>
+        </ScrollView>
+        <Marginer value={50} />
+        <ScrollView style={home.discover}>
+          <Text style={home.discoverTitle}>
+            Decouvrir les destinations disponibles sur l'application
+          </Text>
+          <Marginer value={5} />
+          <View>
+            <ScrollView horizontal={true}>
+              <ImageBackground
+                source={require(Fianara)}
+                style={home.discoverItem}
+              >
+                <View style={home.discoverText}>
+                  <Text style={home.discoverTextChildren}>Fianarantsoa</Text>
+                </View>
+              </ImageBackground>
+
+              <ImageBackground source={require(Tana)} style={home.discoverItem}>
+                <View style={home.discoverText}>
+                  <Text style={home.discoverTextChildren}>Antananarivo</Text>
+                </View>
+              </ImageBackground>
+
+              <ImageBackground
+                source={require(Manakara)}
+                style={home.discoverItem}
+              >
+                <View style={home.discoverText}>
+                  <Text style={home.discoverTextChildren}>Manakara</Text>
+                </View>
+              </ImageBackground>
+
+              <ImageBackground
+                source={require(Antsirabe)}
+                style={home.discoverItem}
+              >
+                <View style={home.discoverText}>
+                  <Text style={home.discoverTextChildren}>Antsirabe</Text>
+                </View>
+              </ImageBackground>
+            </ScrollView>
           </View>
-        </ImageBackground>
-      </ScrollView>
-      <ScrollView style={home.banner}>
-        <Text style={home.font}>
-          Partez en voyage les mains dans les poches !
-        </Text>
-      </ScrollView>
-      <Marginer value={50} />  
-      <ScrollView style={home.discover}>
-        <Text style={home.discoverTitle}>
-          Decouvrir les destinations disponibles sur l'application
-        </Text>
-        <Marginer value={5} />
-        <View>
-          <ScrollView horizontal={true}>
-            <ImageBackground source={require(Fianara)} style={home.discoverItem}>
-              <View style={home.discoverText}>
-                <Text style={home.discoverTextChildren}>Fianarantsoa</Text>
-              </View>
-            </ImageBackground>
-
-            <ImageBackground source={require(Tana)} style={home.discoverItem}>
-              <View style={home.discoverText}>
-                <Text style={home.discoverTextChildren}>Antananarivo</Text>
-              </View>
-            </ImageBackground>
-
-            <ImageBackground source={require(Manakara)} style={home.discoverItem}>
-              <View style={home.discoverText}>
-                <Text style={home.discoverTextChildren}>Manakara</Text>
-              </View>
-            </ImageBackground>
-
-            <ImageBackground source={require(Antsirabe)} style={home.discoverItem}>
-              <View style={home.discoverText}>
-                <Text style={home.discoverTextChildren}>Antsirabe</Text>
-              </View>
-            </ImageBackground>
-          </ScrollView>
-        </View>
-      </ScrollView>
-      <Marginer value={50} />  
-    </View>
-  </ScrollView>
+        </ScrollView>
+        <Marginer value={50} />
+      </View>
+    </ScrollView>
   );
 }
 
 const home = StyleSheet.create({
   btn: {
-    width: '50%',
-    marginHorizontal: 'auto'
+    width: "50%",
+    marginHorizontal: "auto",
   },
-  acc : {
-    width: '100%',
+  acc: {
+    width: "100%",
   },
-  banner : {
+  banner: {
     height: 230,
-    width : '100%',
+    width: "100%",
     backgroundColor: colorBlue,
-    padding : 25,
-  } , 
-  font : {
-    color : '#fff' ,
-    fontSize : 22 , 
-    textAlign : 'left' , 
-    fontWeight : 'bold'
-  } , 
-  title : {
-    color : 'white',
-    fontSize : 25 , 
-    textAlign : 'left' , 
-    fontWeight : 'bold',
-  } , 
-  resrvationtitle : {
-    color : '#fff' ,
-    fontSize : 16 , 
+    padding: 25,
+  },
+  font: {
+    color: "#fff",
+    fontSize: 22,
+    textAlign: "left",
+    fontWeight: "bold",
+  },
+  title: {
+    color: "white",
+    fontSize: 25,
+    textAlign: "left",
+    fontWeight: "bold",
+  },
+  resrvationtitle: {
+    color: "#fff",
+    fontSize: 16,
     marginVertical: 5,
-    textAlign : 'left' , 
-  } , 
-  button : {
+    textAlign: "left",
+  },
+  button: {
     padding: 5,
-    borderColor: '#000',
+    borderColor: "#000",
     borderWidth: 1,
-    textAlign : 'center',
-  } ,
-  discover : {
+    textAlign: "center",
+  },
+  discover: {
     padding: 5,
-    height: 'auto'
+    height: "auto",
   },
   discoverTitle: {
-    color : colorBlue ,
-    fontSize : 22 , 
-    textAlign : 'left' , 
-    fontWeight : 'bold',
+    color: colorBlue,
+    fontSize: 22,
+    textAlign: "left",
+    fontWeight: "bold",
   },
   discoverItem: {
     // borderRadius: 5,
@@ -144,15 +158,15 @@ const home = StyleSheet.create({
     // height: '100%',
     // marginHorizontal: 3,
   },
-  home :{
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
+  home: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
     height: 600,
-    backgroundColor: 'rgba(0 , 0 , 0 , .3)',
-    padding: 25
+    backgroundColor: "rgba(0 , 0 , 0 , .3)",
+    padding: 25,
   },
-  imgBg : {
+  imgBg: {
     // width: '100%',
     // objectFit: 'content',
     // height: '100%',
@@ -160,13 +174,13 @@ const home = StyleSheet.create({
   discoverText: {
     marginTop: 150,
     height: 40,
-    backgroundColor: 'rgba(0 , 0 , 0, .5)',
+    backgroundColor: "rgba(0 , 0 , 0, .5)",
   },
   discoverTextChildren: {
-    color: '#fff',
-    fontSize : 18 , 
+    color: "#fff",
+    fontSize: 18,
     paddingVertical: 5,
     paddingHorizontal: 15,
-    fontWeight : 'bold',
-  }
+    fontWeight: "bold",
+  },
 });
