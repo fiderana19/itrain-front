@@ -1,51 +1,164 @@
-# Welcome to your Expo app 👋
+# 💻 I-TRAIN
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+I-Train is an Expo application designed to manage subway ticket reservations. This app allows validated users to log in and new users to sign up. The application is still a work in progress, with ongoing improvements to the source code, new features, and updates.
 
-## Get started
+-----
 
-1. Install dependencies
+## ✨ Features
 
-   ```bash
-   npm install
-   ```
+I-Train app has several key features, including:
 
-2. Start the app
+  * Managing user accounts.
+  * Managing subway.
+  * Managing cities.
+  * Managing tickets.
+  * Managing journey.
+  * Ticket generation.
 
-   ```bash
-    npx expo start
-   ```
+The app also incorporates features for better performance and user experience, such as:
 
-In the output, you'll find options to open the app in a
+  * Form handling with validation.
+  * Data caching.
+  * Clean code structure.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+-----
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🚧 Status
 
-## Get a fresh project
+The application is still in progress for a better source code, new features, and updates.
 
-When you're ready, run:
+-----
 
+## Getting Started
+
+### Prerequisites
+
+* Node.js
+* npm or yarn
+
+### Installation
+
+1.  Clone the repository:
+    ```bash
+    git clone <repository_url>
+    cd <repository_name>
+    ```
+2.  Install the required modules. Be sure to execute the following command for modules installation:
+    ```bash
+    npm install
+    ```
+    or
+    ```bash
+    yarn
+    ```
+
+### Running the App
+
+Run the application with the following command:
 ```bash
-npm run reset-project
+npm run dev
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+-----
 
-## Learn more
+## Visitor Page
 
-To learn more about developing your project with Expo, look at the following resources:
+The home page of visitor is a page with a small description about the app.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+<p align="center">
+<img src="https://github.com/fiderana19/itrain-front/blob/feat/readme/assets/readme/visitorhome.png?raw=true" alt="Visitor home" width="800"/>
+</p>
 
-## Join the community
+There's also a search page for available journey.
 
-Join our community of developers creating universal apps.
+<p align="center">
+<img src="https://github.com/fiderana19/itrain-front/blob/feat/readme/assets/readme/visitorsearch.png?raw=true" alt="Visitor search" width="800"/>
+</p>
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-# itrain-front
+A login form to access the app's features.
+
+<p align="center">
+<img src="https://github.com/fiderana19/itrain-front/blob/feat/readme/assets/readme/visitorlogin.png?raw=true" alt="Visitor login" width="800"/>
+</p>
+
+-----
+
+## 🔒 User Roles
+
+The application has two types of logged-in accounts: the user and the admin.
+
+### User Space
+
+The user's space includes a welcome page with a greeting personalized with their name. There is also a page to manage tickets, serach for journey and a profile page to view registered information and log out.
+
+The user space provides a personalized experience for clients.
+
+* **Home Page**: A greeting with the user's name is displayed upon login.
+
+<p align="center">
+<img src="https://github.com/fiderana19/itrain-front/blob/feat/readme/assets/readme/clienthome.png?raw=true" alt="Client home" width="800"/>
+</p>
+
+* **Search Page**: A dedicated page where users can search for available journey.
+
+<p align="center">
+<img src="https://github.com/fiderana19/itrain-front/blob/feat/readme/assets/readme/clientsearch.png?raw=true" alt="Client search" width="800"/>
+</p>
+
+* **Ticket Page**: Users can view their reserved journey tickets.
+
+<p align="center">
+<img src="https://github.com/fiderana19/itrain-front/blob/feat/readme/assets/readme/clientticket.png?raw=true" alt="Client ticket" width="800"/>
+</p>
+
+* **Profile Page**: The page to view registrated informations and log out.
+
+<p align="center">
+<img src="https://github.com/fiderana19/itrain-front/blob/feat/readme/assets/readme/clientaccount.png?raw=true" alt="Client account" width="800"/>
+</p>
+
+### Admin's Space
+
+The admin space is designed for managing the application's data and operations.
+
+* **Home Page**: The welcome page for admins.
+
+<p align="center">
+<img src="https://github.com/fiderana19/itrain-front/blob/feat/readme/assets/readme/adminhome.png?raw=true" alt="Admin home" width="800"/>
+</p>
+
+* **Subway Management**: The page to manage subways.
+
+<p align="center">
+<img src="https://github.com/fiderana19/itrain-front/blob/feat/readme/assets/readme/admintrain.png?raw=true" alt="Admin subway" width="800"/>
+</p>
+
+* **Reservations Management**: The page to manage reservations.
+
+<p align="center">
+<img src="https://github.com/fiderana19/itrain-front/blob/feat/readme/assets/readme/adminreservation.png?raw=true" alt="Admin reservation" width="800"/>
+</p>
+
+* **Journey Management**: The page to manage journeys.
+
+<p align="center">
+<img src="https://github.com/fiderana19/itrain-front/blob/feat/readme/assets/readme/admintrajet.png?raw=true" alt="Admin journey" width="800"/>
+</p>
+
+* **City Management**: The page to manage cities.
+
+<p align="center">
+<img src="https://github.com/fiderana19/itrain-front/blob/feat/readme/assets/readme/adminville.png?raw=true" alt="Admin city" width="800"/>
+</p>
+
+* **Profile Page**: The page to log out and view registrated informations.
+
+<p align="center">
+<img src="https://github.com/fiderana19/itrain-front/blob/feat/readme/assets/readme/adminaccount.png?raw=true" alt="Admin account" width="800"/>
+</p>
+
+-----
+
+## ⭐️ Star
+
+Don't hesitate to give a star, it will gives me a motivation for my projects and my progress.
