@@ -1,9 +1,9 @@
 {
-  "name": "my-new-project",
+  "name": "itrain",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
+    "dev": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "format": "prettier --write \"src/**/*.ts\" \"**/*.ts\" \"**/*.tsx\"",
